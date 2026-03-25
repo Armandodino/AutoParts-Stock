@@ -3,8 +3,13 @@ const path = require('path');
 const fs = require('fs');
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
-if (require('electron-squirrel-startup')) {
-  app.quit();
+try {
+  if (require('electron-squirrel-startup')) {
+    app.quit();
+  }
+} catch (e) {
+  // electron-squirrel-startup not installed, skip this step
+  console.log('electron-squirrel-startup not found, skipping...');
 }
 
 let mainWindow;
