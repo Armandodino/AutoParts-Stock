@@ -56,7 +56,7 @@ interface Movement {
 export default function MovementsPage() {
   const [movements, setMovements] = useState<Movement[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [filterType, setFilterType] = useState<string>('');
+  const [filterType, setFilterType] = useState<string>('all');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
 
@@ -68,7 +68,7 @@ export default function MovementsPage() {
     setIsLoading(true);
     try {
       const params = new URLSearchParams();
-      if (filterType) params.append('type', filterType);
+      if (filterType && filterType !== 'all') params.append('type', filterType);
       if (startDate) params.append('startDate', startDate);
       if (endDate) params.append('endDate', endDate);
 
@@ -187,7 +187,7 @@ export default function MovementsPage() {
                 <SelectValue placeholder="Tous les types" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Tous les types</SelectItem>
+                <SelectItem value="all">Tous les types</SelectItem>
                 <SelectItem value="ENTRY">Entrées</SelectItem>
                 <SelectItem value="EXIT">Sorties</SelectItem>
                 <SelectItem value="ADJUST">Ajustements</SelectItem>
@@ -210,11 +210,11 @@ export default function MovementsPage() {
                 className="bg-slate-700/50 border-slate-600 w-40"
               />
             </div>
-            {(filterType || startDate || endDate) && (
-              <Button 
-                variant="ghost" 
+            {(filterType !== 'all' || startDate || endDate) && (
+              <Button
+                variant="ghost"
                 onClick={() => {
-                  setFilterType('');
+                  setFilterType('all');
                   setStartDate('');
                   setEndDate('');
                 }}

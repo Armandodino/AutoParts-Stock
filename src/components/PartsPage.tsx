@@ -80,7 +80,7 @@ export default function PartsPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [showFilters, setShowFilters] = useState(false);
   const [filterLowStock, setFilterLowStock] = useState(false);
   const [filterOutOfStock, setFilterOutOfStock] = useState(false);
@@ -127,7 +127,7 @@ export default function PartsPage() {
     try {
       const params = new URLSearchParams();
       if (search) params.append('search', search);
-      if (selectedCategory) params.append('categoryId', selectedCategory);
+      if (selectedCategory && selectedCategory !== 'all') params.append('categoryId', selectedCategory);
       if (filterLowStock) params.append('minStock', 'true');
       if (filterOutOfStock) params.append('outOfStock', 'true');
 
@@ -355,7 +355,7 @@ export default function PartsPage() {
                 <SelectValue placeholder="Toutes catégories" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Toutes catégories</SelectItem>
+                <SelectItem value="all">Toutes catégories</SelectItem>
                 {categories.map((cat) => (
                   <SelectItem key={cat.id} value={cat.id}>
                     {cat.name}
