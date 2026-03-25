@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { 
   Table, 
   TableBody, 
@@ -50,7 +49,6 @@ import {
   X,
   Filter,
   Download,
-  Sparkles,
   Inventory
 } from 'lucide-react';
 
@@ -176,7 +174,6 @@ export default function PartsPage() {
       });
     } else {
       setEditingPart(null);
-      // Use first category if available
       const defaultCategoryId = categories.length > 0 ? categories[0].id : '';
       setFormData({
         name: '',
@@ -321,327 +318,224 @@ export default function PartsPage() {
   };
 
   const getStockStatus = (part: Part) => {
-    if (part.quantity <= 0) return { label: 'Rupture', variant: 'destructive' as const };
-    if (part.quantity <= part.minStock) return { label: 'Stock faible', variant: 'secondary' as const };
-    return { label: 'En stock', variant: 'default' as const };
+    if (part.quantity <= 0) return { label: 'Rupture', className: 'bg-error-container text-on-error-container' };
+    if (part.quantity <= part.minStock) return { label: 'Stock faible', className: 'bg-tertiary-fixed text-on-tertiary-fixed-variant' };
+    return { label: 'En stock', className: 'bg-primary-fixed text-on-primary-fixed-variant' };
   };
 
   return (
     <div className="space-y-8">
-      {/* Header */}
-      <div className="flex flex-col lg:flex-row justify-between gap-6">
-        <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-lg shadow-violet-500/25">
-            <Inventory className="w-7 h-7 text-white" />
+      {/* Header Section */}
+      <div className="flex justify-between items-end">
+        <div>
+          <h2 className="font-headline text-3xl font-extrabold tracking-tight text-on-surface">Pièces Automobiles</h2>
+          <p className="font-label text-sm text-on-surface-variant uppercase tracking-widest mt-1">Inventaire en direct</p>
+        </div>
+        <div className="flex gap-4">
+          <div className="bg-surface-container-lowest p-4 rounded-xl flex items-center gap-4 border border-outline-variant/10">
+            <div className="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container">
+              <Inventory className="w-5 h-5" />
+            </div>
+            <div>
+              <p className="text-xs font-label text-slate-500 uppercase tracking-tighter">Total</p>
+              <p className="font-headline text-xl font-bold">{parts.length}</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 via-gray-800 to-gray-600 bg-clip-text text-transparent">
-              Pièces automobiles
-            </h1>
-            <p className="text-gray-500 mt-1">Gérez votre inventaire de pièces détachées</p>
+          <div className="bg-surface-container-lowest p-4 rounded-xl flex items-center gap-4 border border-outline-variant/10">
+            <div className="w-10 h-10 rounded-full bg-tertiary-fixed flex items-center justify-center text-on-tertiary-fixed-variant">
+              <Filter className="w-5 h-5" />
+            </div>
+            <div>
+              <p className="text-xs font-label text-slate-500 uppercase tracking-tighter">Stock faible</p>
+              <p className="font-headline text-xl font-bold text-tertiary">{parts.filter(p => p.quantity > 0 && p.quantity <= p.minStock).length}</p>
+            </div>
           </div>
         </div>
-        <div className="flex gap-3">
-          <Button variant="outline" onClick={handleExport} className="gap-2 h-11 px-5 border-2 hover:bg-gray-50">
-            <Download className="w-4 h-4" />
-            Exporter
-          </Button>
-          <Button 
-            onClick={() => handleOpenPartDialog()} 
-            className="gap-2 h-11 px-5 bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 shadow-lg shadow-violet-500/25"
+      </div>
+
+      {/* Filter Bar */}
+      <div className="bg-surface-container-low p-3 rounded-xl flex items-center gap-4">
+        <div className="flex items-center gap-2 bg-surface-container-lowest px-4 py-2 rounded-lg text-sm border border-outline-variant/20 cursor-pointer hover:bg-white transition-colors">
+          <Filter className="w-4 h-4 text-slate-500" />
+          <select 
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            className="bg-transparent border-none focus:ring-0 font-semibold cursor-pointer"
           >
-            <Plus className="w-5 h-5" />
-            Nouvelle pièce
-          </Button>
+            <option value="all-categories">Catégorie: Toutes</option>
+            {categories.map(cat => (
+              <option key={cat.id} value={cat.id}>{cat.name}</option>
+            ))}
+          </select>
         </div>
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <Input
+            placeholder="Rechercher par nom, référence ou code-barres..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-10 bg-surface-container-lowest border-none h-10"
+          />
+        </div>
+        <Button variant="outline" onClick={handleExport} className="gap-2">
+          <Download className="w-4 h-4" />
+          Exporter
+        </Button>
+        <Button 
+          onClick={() => handleOpenPartDialog()} 
+          className="bg-primary text-on-primary hover:bg-primary-container gap-2"
+        >
+          <Plus className="w-4 h-4" />
+          Nouvelle pièce
+        </Button>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="bg-gradient-to-br from-violet-50 to-purple-50 border-violet-100">
-          <CardContent className="p-5">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-violet-100 flex items-center justify-center">
-                <Package className="w-6 h-6 text-violet-600" />
-              </div>
-              <div>
-                <p className="text-sm text-violet-600 font-medium">Total pièces</p>
-                <p className="text-2xl font-bold text-violet-900">{parts.length}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="bg-gradient-to-br from-emerald-50 to-green-50 border-emerald-100">
-          <CardContent className="p-5">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center">
-                <ArrowDownRight className="w-6 h-6 text-emerald-600" />
-              </div>
-              <div>
-                <p className="text-sm text-emerald-600 font-medium">En stock</p>
-                <p className="text-2xl font-bold text-emerald-900">{parts.filter(p => p.quantity > p.minStock).length}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="bg-gradient-to-br from-amber-50 to-orange-50 border-amber-100">
-          <CardContent className="p-5">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-amber-100 flex items-center justify-center">
-                <Sparkles className="w-6 h-6 text-amber-600" />
-              </div>
-              <div>
-                <p className="text-sm text-amber-600 font-medium">Stock faible</p>
-                <p className="text-2xl font-bold text-amber-900">{parts.filter(p => p.quantity > 0 && p.quantity <= p.minStock).length}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="bg-gradient-to-br from-rose-50 to-red-50 border-rose-100">
-          <CardContent className="p-5">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-rose-100 flex items-center justify-center">
-                <Trash2 className="w-6 h-6 text-rose-600" />
-              </div>
-              <div>
-                <p className="text-sm text-rose-600 font-medium">Rupture</p>
-                <p className="text-2xl font-bold text-rose-900">{parts.filter(p => p.quantity <= 0).length}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Filters */}
-      <Card className="border-2 border-gray-100 shadow-sm">
-        <CardContent className="p-5">
-          <div className="flex flex-col lg:flex-row gap-4">
-            <div className="flex-1 relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-              <Input
-                placeholder="Rechercher par nom, référence ou code-barres..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="pl-12 h-11 bg-gray-50 border-2 border-gray-100 focus:border-violet-300 focus:bg-white"
-              />
-            </div>
-            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-              <SelectTrigger className="w-full lg:w-56 h-11 bg-gray-50 border-2 border-gray-100">
-                <SelectValue placeholder="Toutes catégories" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all-categories">Toutes catégories</SelectItem>
-                {categories.map((cat) => (
-                  <SelectItem key={cat.id} value={cat.id}>
-                    {cat.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Button 
-              variant="outline" 
-              onClick={() => setShowFilters(!showFilters)}
-              className={`h-11 px-5 border-2 ${showFilters ? 'bg-violet-50 border-violet-300 text-violet-700' : ''}`}
-            >
-              <Filter className="w-4 h-4 mr-2" />
-              Filtres
-            </Button>
-          </div>
-
-          {showFilters && (
-            <div className="flex gap-6 mt-4 pt-4 border-t-2 border-gray-100">
-              <label className="flex items-center gap-3 cursor-pointer group">
-                <input
-                  type="checkbox"
-                  checked={filterLowStock}
-                  onChange={(e) => setFilterLowStock(e.target.checked)}
-                  className="w-5 h-5 rounded border-2 border-gray-300 text-violet-500 focus:ring-violet-500"
-                />
-                <span className="text-sm text-gray-600 group-hover:text-gray-900">Stock faible</span>
-              </label>
-              <label className="flex items-center gap-3 cursor-pointer group">
-                <input
-                  type="checkbox"
-                  checked={filterOutOfStock}
-                  onChange={(e) => setFilterOutOfStock(e.target.checked)}
-                  className="w-5 h-5 rounded border-2 border-gray-300 text-violet-500 focus:ring-violet-500"
-                />
-                <span className="text-sm text-gray-600 group-hover:text-gray-900">Rupture de stock</span>
-              </label>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Parts table */}
-      <Card className="border-2 border-gray-100 shadow-sm overflow-hidden">
-        <CardContent className="p-0">
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-gray-50/80 border-b-2 border-gray-100 hover:bg-gray-50/80">
-                  <TableHead className="text-gray-600 font-semibold py-4">Pièce</TableHead>
-                  <TableHead className="text-gray-600 font-semibold py-4">Catégorie</TableHead>
-                  <TableHead className="text-gray-600 font-semibold py-4">Prix achat</TableHead>
-                  <TableHead className="text-gray-600 font-semibold py-4">Prix vente</TableHead>
-                  <TableHead className="text-gray-600 font-semibold py-4">Stock</TableHead>
-                  <TableHead className="text-gray-600 font-semibold py-4">Statut</TableHead>
-                  <TableHead className="text-gray-600 font-semibold py-4 text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {isLoading ? (
-                  <TableRow>
-                    <TableCell colSpan={7} className="text-center py-16">
-                      <div className="flex flex-col items-center gap-3">
-                        <div className="w-12 h-12 rounded-full border-4 border-violet-200 border-t-violet-500 animate-spin" />
-                        <p className="text-gray-500 font-medium">Chargement...</p>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ) : parts.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={7} className="text-center py-16">
-                      <div className="flex flex-col items-center gap-4">
-                        <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-gray-100 to-gray-50 flex items-center justify-center">
-                          <Package className="w-10 h-10 text-gray-300" />
+      {/* Data Table */}
+      <div className="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden border border-outline-variant/5">
+        <table className="w-full text-left border-collapse">
+          <thead>
+            <tr className="bg-surface-container-low/50">
+              <th className="px-6 py-4 font-label text-[10px] uppercase tracking-[0.15em] text-slate-500 font-bold">Détails</th>
+              <th className="px-6 py-4 font-label text-[10px] uppercase tracking-[0.15em] text-slate-500 font-bold">Référence</th>
+              <th className="px-6 py-4 font-label text-[10px] uppercase tracking-[0.15em] text-slate-500 font-bold">Catégorie</th>
+              <th className="px-6 py-4 font-label text-[10px] uppercase tracking-[0.15em] text-slate-500 font-bold">Prix</th>
+              <th className="px-6 py-4 font-label text-[10px] uppercase tracking-[0.15em] text-slate-500 font-bold">Quantité</th>
+              <th className="px-6 py-4 font-label text-[10px] uppercase tracking-[0.15em] text-slate-500 font-bold">Statut</th>
+              <th className="px-6 py-4 font-label text-[10px] uppercase tracking-[0.15em] text-slate-500 font-bold text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-outline-variant/10">
+            {isLoading ? (
+              <tr>
+                <td colSpan={7} className="text-center py-12">
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="w-8 h-8 rounded-full border-2 border-primary-fixed border-t-primary animate-spin" />
+                    <p className="text-on-surface-variant">Chargement...</p>
+                  </div>
+                </td>
+              </tr>
+            ) : parts.length === 0 ? (
+              <tr>
+                <td colSpan={7} className="text-center py-12">
+                  <Package className="w-12 h-12 mx-auto text-slate-300 mb-2" />
+                  <p className="text-on-surface font-medium">Aucune pièce trouvée</p>
+                  <p className="text-sm text-on-surface-variant">Commencez par ajouter votre première pièce</p>
+                </td>
+              </tr>
+            ) : (
+              parts.map((part) => {
+                const status = getStockStatus(part);
+                return (
+                  <tr key={part.id} className="hover:bg-surface-container-low/30 transition-colors group">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded bg-slate-100 flex items-center justify-center">
+                          <Package className="w-5 h-5 text-slate-400" />
                         </div>
                         <div>
-                          <p className="text-gray-700 font-semibold text-lg">Aucune pièce trouvée</p>
-                          <p className="text-gray-400 mt-1">Commencez par ajouter votre première pièce</p>
+                          <p className="font-bold text-on-surface">{part.name}</p>
+                          <p className="text-xs text-slate-400">{part.description || 'Aucune description'}</p>
                         </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 font-mono text-xs text-slate-600">{part.reference}</td>
+                    <td className="px-6 py-4">
+                      <span className="text-xs bg-secondary-container/30 text-on-secondary-container px-2 py-1 rounded">
+                        {part.category?.name || '-'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 font-headline font-semibold">{formatCurrency(part.sellingPrice)}</td>
+                    <td className="px-6 py-4">
+                      <span className="font-headline font-bold">{part.quantity}</span>
+                      <span className="text-[10px] text-slate-400 ml-1">unités</span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${status.className}`}>
+                        <span className="w-1.5 h-1.5 rounded-full bg-current" />
+                        {status.label}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                         <Button 
-                          className="mt-2 bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 shadow-lg shadow-violet-500/25" 
-                          onClick={() => handleOpenPartDialog()}
+                          variant="ghost" 
+                          size="icon"
+                          onClick={() => handleOpenPartDialog(part)}
+                          className="text-slate-400 hover:text-primary hover:bg-primary-fixed/30 rounded"
                         >
-                          <Plus className="w-4 h-4 mr-2" />
-                          Ajouter une pièce
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="icon"
+                          onClick={() => handleOpenStockDialog(part, 'ENTRY')}
+                          className="text-slate-400 hover:text-primary hover:bg-primary-fixed/30 rounded"
+                        >
+                          <ArrowDownRight className="w-4 h-4" />
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="icon"
+                          onClick={() => handleDeletePart(part.id)}
+                          className="text-slate-400 hover:text-error hover:bg-error-container/30 rounded"
+                        >
+                          <Trash2 className="w-4 h-4" />
                         </Button>
                       </div>
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  parts.map((part) => {
-                    const status = getStockStatus(part);
-                    return (
-                      <TableRow key={part.id} className="border-b border-gray-50 hover:bg-violet-50/30 transition-colors">
-                        <TableCell className="py-4">
-                          <div className="flex items-center gap-4">
-                            {part.imageUrl ? (
-                              <img 
-                                src={part.imageUrl} 
-                                alt={part.name}
-                                className="w-12 h-12 rounded-xl object-cover shadow-sm ring-2 ring-gray-100"
-                              />
-                            ) : (
-                              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-gray-100 to-gray-50 flex items-center justify-center ring-2 ring-gray-100">
-                                <Package className="w-6 h-6 text-gray-400" />
-                              </div>
-                            )}
-                            <div>
-                              <p className="font-semibold text-gray-900">{part.name}</p>
-                              <p className="text-sm text-gray-400 font-mono">{part.reference}</p>
-                            </div>
-                          </div>
-                        </TableCell>
-                        <TableCell className="py-4">
-                          <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-700">
-                            {part.category?.name || '-'}
-                          </span>
-                        </TableCell>
-                        <TableCell className="py-4 text-gray-600 font-medium">
-                          {formatCurrency(part.purchasePrice)}
-                        </TableCell>
-                        <TableCell className="py-4 text-gray-900 font-semibold">
-                          {formatCurrency(part.sellingPrice)}
-                        </TableCell>
-                        <TableCell className="py-4">
-                          <span className="text-xl font-bold text-gray-900">{part.quantity}</span>
-                        </TableCell>
-                        <TableCell className="py-4">
-                          <Badge variant={status.variant} className="font-medium">
-                            {status.label}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="py-4 text-right">
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="icon" className="hover:bg-violet-100 rounded-full h-9 w-9">
-                                <MoreVertical className="w-5 h-5 text-gray-400" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-48 rounded-xl shadow-lg border-2">
-                              <DropdownMenuItem onClick={() => handleOpenPartDialog(part)} className="gap-3 py-2.5 cursor-pointer">
-                                <Edit className="w-4 h-4 text-violet-500" />
-                                <span>Modifier</span>
-                              </DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => handleOpenStockDialog(part, 'ENTRY')} className="gap-3 py-2.5 cursor-pointer">
-                                <ArrowDownRight className="w-4 h-4 text-emerald-500" />
-                                <span>Entrée stock</span>
-                              </DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => handleOpenStockDialog(part, 'EXIT')} className="gap-3 py-2.5 cursor-pointer">
-                                <ArrowUpRight className="w-4 h-4 text-rose-500" />
-                                <span>Sortie stock</span>
-                              </DropdownMenuItem>
-                              <DropdownMenuItem 
-                                onClick={() => handleDeletePart(part.id)}
-                                className="gap-3 py-2.5 text-rose-600 focus:text-rose-600 cursor-pointer"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                                <span>Supprimer</span>
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })
-                )}
-              </TableBody>
-            </Table>
-          </div>
-        </CardContent>
-      </Card>
+                    </td>
+                  </tr>
+                );
+              })
+            )}
+          </tbody>
+        </table>
+        {/* Pagination */}
+        <div className="px-6 py-4 bg-surface-container-low/30 flex justify-between items-center">
+          <p className="text-xs text-slate-500 font-label">
+            Affichage de <span className="font-bold text-on-surface">1-{parts.length}</span> sur <span className="font-bold text-on-surface">{parts.length}</span> entrées
+          </p>
+        </div>
+      </div>
 
       {/* Part Dialog */}
       <Dialog open={showPartDialog} onOpenChange={setShowPartDialog}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white border-2 shadow-2xl rounded-2xl">
-          <DialogHeader className="pb-4 border-b border-gray-100">
-            <DialogTitle className="text-xl font-bold">
-              {editingPart ? '✏️ Modifier la pièce' : '📦 Nouvelle pièce'}
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-surface-container-lowest border-0 shadow-2xl">
+          <DialogHeader className="pb-4 border-b border-outline-variant/10">
+            <DialogTitle className="text-xl font-headline font-bold">
+              {editingPart ? 'Modifier la pièce' : 'Nouvelle pièce'}
             </DialogTitle>
             <DialogDescription>
               {editingPart ? 'Modifiez les informations de la pièce' : 'Remplissez les informations de la nouvelle pièce'}
             </DialogDescription>
           </DialogHeader>
 
-          <div className="grid grid-cols-2 gap-5 py-6">
-            <div className="space-y-2">
-              <Label className="text-gray-700 font-medium">Nom *</Label>
+          <div className="grid grid-cols-2 gap-6 py-6">
+            <div className="col-span-2 space-y-2">
+              <Label className="text-xs font-label font-bold text-on-surface-variant uppercase tracking-wider">Nom de la pièce</Label>
               <Input
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="h-11 bg-gray-50 border-2 border-gray-100 focus:border-violet-300"
+                className="bg-surface-container-highest border-0 border-b-2 border-outline-variant focus:border-primary rounded-t-lg"
                 placeholder="Nom de la pièce"
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-gray-700 font-medium">Référence *</Label>
+              <Label className="text-xs font-label font-bold text-on-surface-variant uppercase tracking-wider">Référence</Label>
               <Input
                 value={formData.reference}
                 onChange={(e) => setFormData({ ...formData, reference: e.target.value })}
-                className="h-11 bg-gray-50 border-2 border-gray-100 focus:border-violet-300 font-mono"
+                className="bg-surface-container-highest border-0 border-b-2 border-outline-variant focus:border-primary rounded-t-lg font-mono text-sm"
                 placeholder="REF-001"
               />
             </div>
-            <div className="col-span-2 space-y-2">
-              <Label className="text-gray-700 font-medium">Catégorie *</Label>
+            <div className="space-y-2">
+              <Label className="text-xs font-label font-bold text-on-surface-variant uppercase tracking-wider">Catégorie</Label>
               {categories.length > 0 ? (
                 <Select 
                   value={formData.categoryId} 
                   onValueChange={(v) => setFormData({ ...formData, categoryId: v })}
                 >
-                  <SelectTrigger className="h-11 bg-gray-50 border-2 border-gray-100">
+                  <SelectTrigger className="bg-surface-container-highest border-0 border-b-2 border-outline-variant focus:border-primary rounded-t-lg">
                     <SelectValue placeholder="Sélectionner une catégorie" />
                   </SelectTrigger>
                   <SelectContent>
@@ -651,127 +545,78 @@ export default function PartsPage() {
                   </SelectContent>
                 </Select>
               ) : (
-                <div className="p-4 rounded-xl bg-amber-50 border-2 border-amber-200">
-                  <p className="text-amber-700 text-sm flex items-center gap-2">
-                    <Sparkles className="w-4 h-4" />
-                    Veuillez d&apos;abord créer une catégorie dans Paramètres → Catégories
-                  </p>
+                <div className="p-4 rounded-lg bg-tertiary-fixed/20 text-tertiary text-sm">
+                  Créez d&apos;abord une catégorie dans Paramètres
                 </div>
               )}
             </div>
-            <div className="col-span-2 space-y-2">
-              <Label className="text-gray-700 font-medium">Description</Label>
-              <Textarea
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="bg-gray-50 border-2 border-gray-100 focus:border-violet-300"
-                rows={2}
-                placeholder="Description optionnelle de la pièce"
-              />
-            </div>
             <div className="space-y-2">
-              <Label className="text-gray-700 font-medium">Prix d&apos;achat</Label>
+              <Label className="text-xs font-label font-bold text-on-surface-variant uppercase tracking-wider">Prix d&apos;achat (XOF)</Label>
               <Input
                 type="number"
                 value={formData.purchasePrice}
                 onChange={(e) => setFormData({ ...formData, purchasePrice: e.target.value })}
-                className="h-11 bg-gray-50 border-2 border-gray-100 focus:border-violet-300"
+                className="bg-surface-container-highest border-0 border-b-2 border-outline-variant focus:border-primary rounded-t-lg font-bold"
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-gray-700 font-medium">Prix de vente</Label>
+              <Label className="text-xs font-label font-bold text-on-surface-variant uppercase tracking-wider">Prix de vente (XOF)</Label>
               <Input
                 type="number"
                 value={formData.sellingPrice}
                 onChange={(e) => setFormData({ ...formData, sellingPrice: e.target.value })}
-                className="h-11 bg-gray-50 border-2 border-gray-100 focus:border-violet-300"
+                className="bg-surface-container-highest border-0 border-b-2 border-outline-variant focus:border-primary rounded-t-lg font-bold text-primary"
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-gray-700 font-medium">Quantité initiale</Label>
+              <Label className="text-xs font-label font-bold text-on-surface-variant uppercase tracking-wider">Quantité initiale</Label>
               <Input
                 type="number"
                 value={formData.quantity}
                 onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
-                className="h-11 bg-gray-50 border-2 border-gray-100 focus:border-violet-300"
+                className="bg-surface-container-highest border-0 border-b-2 border-outline-variant focus:border-primary rounded-t-lg font-bold text-xl"
                 disabled={!!editingPart}
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-gray-700 font-medium">Stock minimum (alerte)</Label>
+              <Label className="text-xs font-label font-bold text-on-surface-variant uppercase tracking-wider">Stock minimum</Label>
               <Input
                 type="number"
                 value={formData.minStock}
                 onChange={(e) => setFormData({ ...formData, minStock: e.target.value })}
-                className="h-11 bg-gray-50 border-2 border-gray-100 focus:border-violet-300"
+                className="bg-surface-container-highest border-0 border-b-2 border-outline-variant focus:border-primary rounded-t-lg font-bold text-xl"
               />
             </div>
-            <div className="space-y-2">
-              <Label className="text-gray-700 font-medium">Emplacement</Label>
+            <div className="col-span-2 space-y-2">
+              <Label className="text-xs font-label font-bold text-on-surface-variant uppercase tracking-wider">Emplacement</Label>
               <Input
                 value={formData.location}
                 onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                 placeholder="Ex: Étagère A, Rayon 3"
-                className="h-11 bg-gray-50 border-2 border-gray-100 focus:border-violet-300"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label className="text-gray-700 font-medium">Code-barres</Label>
-              <Input
-                value={formData.barcode}
-                onChange={(e) => setFormData({ ...formData, barcode: e.target.value })}
-                className="h-11 bg-gray-50 border-2 border-gray-100 focus:border-violet-300 font-mono"
+                className="bg-surface-container-highest border-0 border-b-2 border-outline-variant focus:border-primary rounded-t-lg"
               />
             </div>
             <div className="col-span-2 space-y-2">
-              <Label className="text-gray-700 font-medium">Photo de la pièce</Label>
-              <div className="flex gap-4 items-start">
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={handleImageUpload}
-                  accept="image/*"
-                  className="hidden"
-                />
-                {formData.imageUrl ? (
-                  <div className="relative group">
-                    <img 
-                      src={formData.imageUrl} 
-                      alt="Pièce"
-                      className="w-24 h-24 rounded-xl object-cover shadow-md ring-2 ring-gray-100"
-                    />
-                    <Button
-                      variant="destructive"
-                      size="icon"
-                      className="absolute -top-2 -right-2 h-6 w-6 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
-                      onClick={() => setFormData({ ...formData, imageUrl: '' })}
-                    >
-                      <X className="w-3 h-3" />
-                    </Button>
-                  </div>
-                ) : (
-                  <Button
-                    variant="outline"
-                    onClick={() => fileInputRef.current?.click()}
-                    className="w-24 h-24 border-2 border-dashed border-gray-200 hover:border-violet-300 hover:bg-violet-50"
-                  >
-                    <Upload className="w-6 h-6 text-gray-400" />
-                  </Button>
-                )}
-              </div>
+              <Label className="text-xs font-label font-bold text-on-surface-variant uppercase tracking-wider">Description</Label>
+              <Textarea
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                className="bg-surface-container-highest border-0 border-b-2 border-outline-variant focus:border-primary rounded-t-lg"
+                rows={2}
+              />
             </div>
           </div>
 
-          <DialogFooter className="gap-3 pt-4 border-t border-gray-100">
-            <Button variant="outline" onClick={() => setShowPartDialog(false)} className="h-11 px-6">
+          <DialogFooter className="gap-3 pt-4 border-t border-outline-variant/10">
+            <Button variant="outline" onClick={() => setShowPartDialog(false)} className="bg-white border-slate-200 text-slate-600">
               Annuler
             </Button>
             <Button 
               onClick={handleSavePart} 
-              className="h-11 px-6 bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 shadow-lg shadow-violet-500/25"
+              className="bg-gradient-to-br from-primary to-primary-container text-white shadow-lg shadow-primary/20"
               disabled={categories.length === 0}
             >
-              {editingPart ? '💾 Modifier' : '📦 Créer'}
+              {editingPart ? 'Modifier' : 'Créer'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -779,44 +624,44 @@ export default function PartsPage() {
 
       {/* Stock Movement Dialog */}
       <Dialog open={showStockDialog} onOpenChange={setShowStockDialog}>
-        <DialogContent className="bg-white border-2 shadow-2xl rounded-2xl">
-          <DialogHeader className="pb-4 border-b border-gray-100">
-            <DialogTitle className="text-xl font-bold flex items-center gap-2">
+        <DialogContent className="bg-surface-container-lowest border-0 shadow-2xl">
+          <DialogHeader className="pb-4 border-b border-outline-variant/10">
+            <DialogTitle className="text-xl font-headline font-bold flex items-center gap-2">
               {stockData.type === 'ENTRY' ? (
-                <><ArrowDownRight className="w-5 h-5 text-emerald-500" /> Entrée de stock</>
+                <><ArrowDownRight className="w-5 h-5 text-primary" /> Entrée de stock</>
               ) : (
-                <><ArrowUpRight className="w-5 h-5 text-rose-500" /> Sortie de stock</>
+                <><ArrowUpRight className="w-5 h-5 text-tertiary" /> Sortie de stock</>
               )}
             </DialogTitle>
             <DialogDescription>
-              <span className="font-medium text-gray-700">{selectedPartForStock?.name}</span>
-              <span className="text-gray-400"> • Stock actuel: {selectedPartForStock?.quantity}</span>
+              <span className="font-medium text-on-surface">{selectedPartForStock?.name}</span>
+              <span className="text-on-surface-variant"> • Stock actuel: {selectedPartForStock?.quantity}</span>
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-5 py-6">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-gray-700 font-medium">Quantité</Label>
+                <Label className="text-xs font-label font-bold text-on-surface-variant uppercase tracking-wider">Quantité</Label>
                 <Input
                   type="number"
                   value={stockData.quantity}
                   onChange={(e) => setStockData({ ...stockData, quantity: e.target.value })}
-                  className="h-11 bg-gray-50 border-2 border-gray-100 focus:border-violet-300"
+                  className="bg-surface-container-highest border-0 border-b-2 border-outline-variant focus:border-primary rounded-t-lg font-bold text-xl"
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-gray-700 font-medium">Prix unitaire</Label>
+                <Label className="text-xs font-label font-bold text-on-surface-variant uppercase tracking-wider">Prix unitaire</Label>
                 <Input
                   type="number"
                   value={stockData.unitPrice}
                   onChange={(e) => setStockData({ ...stockData, unitPrice: e.target.value })}
-                  className="h-11 bg-gray-50 border-2 border-gray-100 focus:border-violet-300"
+                  className="bg-surface-container-highest border-0 border-b-2 border-outline-variant focus:border-primary rounded-t-lg font-bold"
                 />
               </div>
             </div>
             <div className="space-y-2">
-              <Label className="text-gray-700 font-medium">
+              <Label className="text-xs font-label font-bold text-on-surface-variant uppercase tracking-wider">
                 {stockData.type === 'ENTRY' ? 'Fournisseur' : 'Client'}
               </Label>
               <Input
@@ -826,41 +671,32 @@ export default function PartsPage() {
                     ? setStockData({ ...stockData, supplier: e.target.value })
                     : setStockData({ ...stockData, customer: e.target.value })
                 }
-                className="h-11 bg-gray-50 border-2 border-gray-100 focus:border-violet-300"
+                className="bg-surface-container-highest border-0 border-b-2 border-outline-variant focus:border-primary rounded-t-lg"
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-gray-700 font-medium">Motif</Label>
+              <Label className="text-xs font-label font-bold text-on-surface-variant uppercase tracking-wider">Motif</Label>
               <Input
                 value={stockData.reason}
                 onChange={(e) => setStockData({ ...stockData, reason: e.target.value })}
-                className="h-11 bg-gray-50 border-2 border-gray-100 focus:border-violet-300"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label className="text-gray-700 font-medium">Notes</Label>
-              <Textarea
-                value={stockData.notes}
-                onChange={(e) => setStockData({ ...stockData, notes: e.target.value })}
-                className="bg-gray-50 border-2 border-gray-100 focus:border-violet-300"
-                rows={2}
+                className="bg-surface-container-highest border-0 border-b-2 border-outline-variant focus:border-primary rounded-t-lg"
               />
             </div>
           </div>
 
-          <DialogFooter className="gap-3 pt-4 border-t border-gray-100">
-            <Button variant="outline" onClick={() => setShowStockDialog(false)} className="h-11 px-6">
+          <DialogFooter className="gap-3 pt-4 border-t border-outline-variant/10">
+            <Button variant="outline" onClick={() => setShowStockDialog(false)} className="bg-white border-slate-200 text-slate-600">
               Annuler
             </Button>
             <Button 
               onClick={handleSaveMovement}
-              className={`h-11 px-6 shadow-lg ${
+              className={`shadow-lg ${
                 stockData.type === 'ENTRY' 
-                  ? 'bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 shadow-emerald-500/25' 
-                  : 'bg-gradient-to-r from-rose-500 to-red-600 hover:from-rose-600 hover:to-red-700 shadow-rose-500/25'
+                  ? 'bg-primary text-on-primary shadow-primary/20' 
+                  : 'bg-tertiary text-on-tertiary shadow-tertiary/20'
               }`}
             >
-              ✓ Confirmer
+              Confirmer
             </Button>
           </DialogFooter>
         </DialogContent>
