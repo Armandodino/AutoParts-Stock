@@ -1,0 +1,201 @@
+// AutoParts Stock Management - Prisma Schema
+// Offline-first application with optional sync support
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Catégories de pièces automobiles
+model Category {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  parts       Part[]
+}
+
+// Pièces automobiles
+model Part {
+  id            String      @id @default(cuid())
+  name          String
+  reference     String      @unique
+  description   String?
+  categoryId    String
+  category      Category    @relation(fields: [categoryId], references: [id])
+  purchasePrice Float       @default(0)
+  sellingPrice  Float       @default(0)
+  quantity      Int         @default(0)
+  minStock      Int         @default(5) // Seuil d'alerte stock faible
+  location      String?     // Emplacement dans le stock
+  imageUrl      String?     // Photo de la pièce
+  barcode       String?     // Code-barres
+  isActive      Boolean     @default(true)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  movements     Movement[]
+  alerts        Alert[]
+  syncStatus    SyncStatus  @default(pending)
+  lastSyncAt    DateTime?
+  
+  @@index([reference])
+  @@index([name])
+  @@index([categoryId])
+}
+
+// Mouvements de stock (entrées/sorties)
+model Movement {
+  id          String          @id @default(cuid())
+  partId      String
+  part        Part            @relation(fields: [partId], references: [id])
+  type        MovementType
+  quantity    Int
+  reason      String?
+  unitPrice   Float           @default(0)
+  totalPrice  Float           @default(0)
+  supplier    String?         // Fournisseur (pour les entrées)
+  customer    String?         // Client (pour les sorties)
+  invoiceRef  String?         // Référence facture
+  notes       String?
+  userId      String?
+  createdAt   DateTime        @default(now())
+  syncStatus  SyncStatus      @default(pending)
+  lastSyncAt  DateTime?
+  
+  @@index([partId])
+  @@index([createdAt])
+  @@index([type])
+}
+
+// Utilisateurs de l'application
+model User {
+  id           String      @id @default(cuid())
+  username     String      @unique
+  password     String      // Hash bcrypt
+  role         UserRole    @default(admin)
+  name         String?
+  email        String?
+  isActive     Boolean     @default(true)
+  lastLoginAt  DateTime?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  syncStatus   SyncStatus  @default(pending)
+  lastSyncAt   DateTime?
+}
+
+// Paramètres de l'application
+model Setting {
+  id                String   @id @default(cuid())
+  key               String   @unique
+  value             String
+  description       String?
+  updatedAt         DateTime @updatedAt
+}
+
+// Sauvegardes
+model Backup {
+  id          String   @id @default(cuid())
+  filename    String
+  filepath    String
+  size        Int      // Taille en bytes
+  type        BackupType
+  status      BackupStatus @default(completed)
+  createdAt   DateTime @default(now())
+}
+
+// File d'attente de synchronisation
+model SyncQueue {
+  id          String     @id @default(cuid())
+  entityType  String     // 'Part', 'Movement', 'User'
+  entityId    String
+  action      SyncAction // 'create', 'update', 'delete'
+  data        String     // JSON stringifié
+  attempts    Int        @default(0)
+  maxAttempts Int        @default(3)
+  status      SyncStatus  @default(pending)
+  error       String?
+  createdAt   DateTime   @default(now())
+  processedAt DateTime?
+  
+  @@index([status])
+  @@index([entityType, entityId])
+}
+
+// Journal des synchronisations
+model SyncLog {
+  id          String     @id @default(cuid())
+  action      String
+  status      SyncStatus
+  message     String?
+  recordsSync Int        @default(0)
+  duration    Int?       // Durée en ms
+  createdAt   DateTime   @default(now())
+}
+
+// Alertes
+model Alert {
+  id          String      @id @default(cuid())
+  type        AlertType
+  title       String
+  message     String
+  partId      String?
+  part        Part?       @relation(fields: [partId], references: [id], onDelete: Cascade)
+  isRead      Boolean     @default(false)
+  isResolved  Boolean     @default(false)
+  createdAt   DateTime    @default(now())
+  resolvedAt  DateTime?
+  
+  @@index([isRead, isResolved])
+  @@index([partId])
+}
+
+// Énumérations
+enum MovementType {
+  ENTRY   // Entrée (approvisionnement)
+  EXIT    // Sortie (vente/consummation)
+  ADJUST  // Ajustement inventaire
+  RETURN  // Retour fournisseur/client
+}
+
+enum UserRole {
+  admin
+  manager
+  user
+}
+
+enum SyncStatus {
+  synced
+  pending
+  error
+  conflict
+}
+
+enum SyncAction {
+  create
+  update
+  delete
+}
+
+enum BackupType {
+  automatic
+  manual
+}
+
+enum BackupStatus {
+  completed
+  failed
+  in_progress
+}
+
+enum AlertType {
+  low_stock
+  out_of_stock
+  sync_error
+  backup_failed
+  system
+}
