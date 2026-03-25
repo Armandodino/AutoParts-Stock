@@ -52,22 +52,17 @@
           "arch": ["x64"]
         }
       ],
-      "icon": "electron/assets/icon.ico",
       "signAndEditExecutable": false
     },
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
-      "installerIcon": "electron/assets/icon.ico",
-      "uninstallerIcon": "electron/assets/icon.ico",
-      "installerHeaderIcon": "electron/assets/icon.ico",
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
       "shortcutName": "AutoParts Stock"
     },
     "mac": {
-      "target": "dmg",
-      "icon": "electron/assets/icon.icns"
+      "target": "dmg"
     },
     "linux": {
       "target": "AppImage",
