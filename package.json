@@ -19,18 +19,45 @@
     "appId": "com.autoparts.stock",
     "productName": "AutoParts Stock",
     "npmRebuild": false,
-    "asar": true,
+    "asar": false,
     "directories": {
       "output": "dist"
     },
     "files": [
       "electron/**/*",
-      ".next/standalone/**/*",
-      ".next/static/**/*",
-      "public/**/*",
-      "prisma/**/*",
-      "db/**/*",
       "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": ".next/standalone",
+        "to": "app/.next/standalone",
+        "filter": ["**/*"]
+      },
+      {
+        "from": ".next/static",
+        "to": "app/.next/static",
+        "filter": ["**/*"]
+      },
+      {
+        "from": "public",
+        "to": "app/public",
+        "filter": ["**/*"]
+      },
+      {
+        "from": "prisma",
+        "to": "app/prisma",
+        "filter": ["**/*"]
+      },
+      {
+        "from": "db",
+        "to": "app/db",
+        "filter": ["**/*"]
+      },
+      {
+        "from": "node_modules",
+        "to": "app/node_modules",
+        "filter": ["**/*"]
+      }
     ],
     "win": {
       "target": [

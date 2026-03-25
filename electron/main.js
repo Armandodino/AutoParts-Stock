@@ -8,29 +8,44 @@ try {
   if (require('electron-squirrel-startup')) {
     app.quit();
   }
-} catch (e) {
-  // Module not installed, skip
-}
+} catch (e) {}
 
 let mainWindow;
 let loadingWindow;
 let serverProcess;
 
-// Paths
-const isDev = process.env.NODE_ENV === 'development' || !app.isPackaged;
-
-function getServerPath() {
-  if (isDev) {
-    return path.join(__dirname, '..', '.next', 'standalone', 'server.js');
+// Determine paths
+function getAppPath() {
+  // For packaged app, resources are in different locations
+  if (app.isPackaged) {
+    // Check if we're running from a portable exe
+    const exeDir = path.dirname(app.getPath('exe'));
+    return exeDir;
   }
-  return path.join(process.resourcesPath, 'app', '.next', 'standalone', 'server.js');
+  return path.join(__dirname, '..');
 }
 
-function getDbPath() {
-  if (isDev) {
-    return path.join(__dirname, '..', 'db', 'custom.db');
+function getServerPath() {
+  const appPath = getAppPath();
+  console.log('App path:', appPath);
+  
+  // Try multiple possible locations for the server
+  const possiblePaths = [
+    path.join(appPath, 'resources', 'app', '.next', 'standalone', 'server.js'),
+    path.join(appPath, 'resources', 'app.asar', '.next', 'standalone', 'server.js'),
+    path.join(process.resourcesPath, 'app', '.next', 'standalone', 'server.js'),
+    path.join(process.resourcesPath, 'app.asar', '.next', 'standalone', 'server.js'),
+    path.join(__dirname, '..', '.next', 'standalone', 'server.js'),
+  ];
+  
+  for (const p of possiblePaths) {
+    console.log('Checking:', p, '-> exists:', fs.existsSync(p));
+    if (fs.existsSync(p)) {
+      return p;
+    }
   }
-  return path.join(process.resourcesPath, 'app', 'db', 'custom.db');
+  
+  return null;
 }
 
 // Create loading window
@@ -91,6 +106,8 @@ function createLoadingWindow() {
           margin-top: 20px;
           font-size: 14px;
           opacity: 0.8;
+          text-align: center;
+          padding: 0 20px;
         }
       </style>
     </head>
@@ -199,16 +216,23 @@ function startServer() {
   return new Promise((resolve, reject) => {
     const serverPath = getServerPath();
     
+    console.log('=== Server Path Debug ===');
     console.log('Server path:', serverPath);
-    console.log('Server exists:', fs.existsSync(serverPath));
+    console.log('resourcesPath:', process.resourcesPath);
+    console.log('app.isPackaged:', app.isPackaged);
+    console.log('exe path:', app.getPath('exe'));
+    console.log('========================');
 
-    if (!fs.existsSync(serverPath)) {
-      reject(new Error(`Server not found: ${serverPath}`));
+    if (!serverPath) {
+      reject(new Error('Server file not found. Please reinstall the application.'));
       return;
     }
 
     updateLoadingStatus('Démarrage du serveur...');
 
+    // Get the directory containing the server
+    const serverDir = path.dirname(serverPath);
+    
     const env = {
       ...process.env,
       PORT: '3000',
@@ -216,8 +240,10 @@ function startServer() {
       DATABASE_URL: 'file:./db/custom.db'
     };
 
+    console.log('Starting server from:', serverDir);
+    
     serverProcess = spawn('node', [serverPath], {
-      cwd: path.dirname(serverPath),
+      cwd: serverDir,
       env: env,
       stdio: ['ignore', 'pipe', 'pipe']
     });
@@ -251,21 +277,19 @@ function startServer() {
 // App lifecycle
 app.whenReady().then(async () => {
   console.log('=== AutoParts Stock Starting ===');
-  console.log('isDev:', isDev);
-  console.log('resourcesPath:', process.resourcesPath);
+  console.log('isPackaged:', app.isPackaged);
 
   // Show loading window
   createLoadingWindow();
 
   try {
-    // Start server if not in development
-    if (!isDev) {
+    if (app.isPackaged) {
       updateLoadingStatus('Initialisation...');
       await startServer();
       updateLoadingStatus('Chargement de l\'application...');
     }
 
-    // Wait a bit for server to be ready
+    // Wait for server
     await new Promise(r => setTimeout(r, 2000));
 
     // Create main window
