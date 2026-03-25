@@ -34,7 +34,7 @@ export default function LoginPage() {
 
       if (data.success) {
         login(data.data);
-        toast.success('Connexion réussie');
+        toast.success('Connexion réussie ! Bienvenue 👋');
       } else {
         setError(data.error || 'Erreur de connexion');
       }
@@ -46,19 +46,27 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-50 via-white to-teal-50 p-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-violet-50 via-white to-purple-50 p-4">
+      {/* Background decorations */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-80 h-80 rounded-full bg-gradient-to-br from-violet-200 to-purple-200 opacity-50 blur-3xl" />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 rounded-full bg-gradient-to-br from-purple-200 to-pink-200 opacity-50 blur-3xl" />
+      </div>
+      
+      <div className="w-full max-w-md relative">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg shadow-emerald-200 mb-4">
-            <Wrench className="w-8 h-8 text-white" />
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 shadow-2xl shadow-violet-500/30 mb-5">
+            <Wrench className="w-10 h-10 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900">AutoParts Stock</h1>
-          <p className="text-gray-500 mt-2">Gestion de stock pièces automobiles</p>
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 via-gray-800 to-gray-600 bg-clip-text text-transparent">
+            AutoParts
+          </h1>
+          <p className="text-gray-500 mt-2 text-lg">Gestion de stock pièces automobiles</p>
         </div>
 
-        <Card className="border-0 shadow-xl shadow-gray-200/50">
+        <Card className="border-2 border-gray-100 shadow-2xl shadow-gray-200/50 backdrop-blur-sm bg-white/80">
           <CardHeader className="space-y-1 pb-4">
-            <CardTitle className="text-2xl text-gray-900">Connexion</CardTitle>
+            <CardTitle className="text-2xl font-bold text-gray-900">Connexion</CardTitle>
             <CardDescription className="text-gray-500">
               Entrez vos identifiants pour accéder à l&apos;application
             </CardDescription>
@@ -66,39 +74,39 @@ export default function LoginPage() {
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-5">
               {error && (
-                <Alert variant="destructive" className="bg-rose-50 border-rose-200">
+                <Alert variant="destructive" className="bg-rose-50 border-rose-200 text-rose-700">
                   <AlertCircle className="h-4 w-4" />
                   <AlertDescription>{error}</AlertDescription>
                 </Alert>
               )}
 
               <div className="space-y-2">
-                <Label htmlFor="username" className="text-gray-700">Nom d&apos;utilisateur</Label>
+                <Label htmlFor="username" className="text-gray-700 font-medium">Nom d&apos;utilisateur</Label>
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                   <Input
                     id="username"
                     type="text"
                     placeholder="admin"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    className="pl-10 bg-gray-50 border-gray-200 focus:bg-white focus:border-emerald-400"
+                    className="h-12 pl-12 bg-gray-50 border-2 border-gray-100 focus:border-violet-400 focus:bg-white"
                     required
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-gray-700">Mot de passe</Label>
+                <Label htmlFor="password" className="text-gray-700 font-medium">Mot de passe</Label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                   <Input
                     id="password"
                     type="password"
                     placeholder="••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="pl-10 bg-gray-50 border-gray-200 focus:bg-white focus:border-emerald-400"
+                    className="h-12 pl-12 bg-gray-50 border-2 border-gray-100 focus:border-violet-400 focus:bg-white"
                     required
                   />
                 </div>
@@ -106,13 +114,13 @@ export default function LoginPage() {
 
               <Button
                 type="submit"
-                className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-md shadow-emerald-200"
+                className="w-full h-12 bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 text-white shadow-lg shadow-violet-500/25 font-medium"
                 disabled={isLoading}
               >
                 {isLoading ? (
                   <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Connexion...
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                    Connexion en cours...
                   </>
                 ) : (
                   'Se connecter'
@@ -122,9 +130,9 @@ export default function LoginPage() {
           </CardContent>
         </Card>
 
-        <div className="flex items-center justify-center gap-2 mt-6">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-          <p className="text-gray-400 text-sm">
+        <div className="flex items-center justify-center gap-3 mt-8">
+          <div className="w-2 h-2 rounded-full bg-violet-500 animate-pulse" />
+          <p className="text-gray-400 text-sm font-medium">
             Mode hors-ligne • Aucune connexion internet requise
           </p>
         </div>

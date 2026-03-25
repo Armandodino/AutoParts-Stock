@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { User, Lock, Mail, AlertCircle, Loader2, CheckCircle, Wrench, Settings } from 'lucide-react';
+import { User, Lock, Mail, AlertCircle, Loader2, CheckCircle, Wrench, Settings, Rocket } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface SetupPageProps {
@@ -61,20 +61,28 @@ export default function SetupPage({ onComplete }: SetupPageProps) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-50 via-white to-teal-50 p-4">
-      <div className="w-full max-w-lg">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-violet-50 via-white to-purple-50 p-4">
+      {/* Background decorations */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-80 h-80 rounded-full bg-gradient-to-br from-violet-200 to-purple-200 opacity-50 blur-3xl" />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 rounded-full bg-gradient-to-br from-purple-200 to-pink-200 opacity-50 blur-3xl" />
+      </div>
+      
+      <div className="w-full max-w-lg relative">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg shadow-emerald-200 mb-4">
-            <Wrench className="w-10 h-10 text-white" />
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 shadow-2xl shadow-violet-500/30 mb-5">
+            <Rocket className="w-10 h-10 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900">AutoParts Stock</h1>
-          <p className="text-gray-500 mt-2">Première utilisation - Configuration</p>
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 via-gray-800 to-gray-600 bg-clip-text text-transparent">
+            AutoParts
+          </h1>
+          <p className="text-gray-500 mt-2 text-lg">Première utilisation - Configuration</p>
         </div>
 
-        <Card className="border-0 shadow-xl shadow-gray-200/50">
+        <Card className="border-2 border-gray-100 shadow-2xl shadow-gray-200/50 backdrop-blur-sm bg-white/80">
           <CardHeader className="space-y-1 pb-4">
-            <CardTitle className="text-2xl text-gray-900 flex items-center gap-2">
-              <Settings className="w-6 h-6 text-emerald-500" />
+            <CardTitle className="text-2xl font-bold text-gray-900 flex items-center gap-3">
+              <Settings className="w-6 h-6 text-violet-500" />
               Configuration initiale
             </CardTitle>
             <CardDescription className="text-gray-500">
@@ -84,7 +92,7 @@ export default function SetupPage({ onComplete }: SetupPageProps) {
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-5">
               {error && (
-                <Alert variant="destructive" className="bg-rose-50 border-rose-200">
+                <Alert variant="destructive" className="bg-rose-50 border-rose-200 text-rose-700">
                   <AlertCircle className="h-4 w-4" />
                   <AlertDescription>{error}</AlertDescription>
                 </Alert>
@@ -92,108 +100,120 @@ export default function SetupPage({ onComplete }: SetupPageProps) {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="username" className="text-gray-700">Nom d&apos;utilisateur *</Label>
+                  <Label htmlFor="username" className="text-gray-700 font-medium">Nom d&apos;utilisateur *</Label>
                   <div className="relative">
-                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                     <Input
                       id="username"
                       type="text"
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
-                      className="pl-10 bg-gray-50 border-gray-200 focus:bg-white focus:border-emerald-400"
+                      className="h-12 pl-12 bg-gray-50 border-2 border-gray-100 focus:border-violet-400 focus:bg-white"
                       required
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="name" className="text-gray-700">Nom complet</Label>
+                  <Label htmlFor="name" className="text-gray-700 font-medium">Nom complet</Label>
                   <div className="relative">
-                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                     <Input
                       id="name"
                       type="text"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="pl-10 bg-gray-50 border-gray-200 focus:bg-white focus:border-emerald-400"
+                      className="h-12 pl-12 bg-gray-50 border-2 border-gray-100 focus:border-violet-400 focus:bg-white"
                     />
                   </div>
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-gray-700">Email (optionnel)</Label>
+                <Label htmlFor="email" className="text-gray-700 font-medium">Email (optionnel)</Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                   <Input
                     id="email"
                     type="email"
                     placeholder="admin@exemple.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="pl-10 bg-gray-50 border-gray-200 focus:bg-white focus:border-emerald-400"
+                    className="h-12 pl-12 bg-gray-50 border-2 border-gray-100 focus:border-violet-400 focus:bg-white"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="password" className="text-gray-700">Mot de passe *</Label>
+                  <Label htmlFor="password" className="text-gray-700 font-medium">Mot de passe *</Label>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                     <Input
                       id="password"
                       type="password"
                       placeholder="••••••"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="pl-10 bg-gray-50 border-gray-200 focus:bg-white focus:border-emerald-400"
+                      className="h-12 pl-12 bg-gray-50 border-2 border-gray-100 focus:border-violet-400 focus:bg-white"
                       required
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="confirmPassword" className="text-gray-700">Confirmer *</Label>
+                  <Label htmlFor="confirmPassword" className="text-gray-700 font-medium">Confirmer *</Label>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                     <Input
                       id="confirmPassword"
                       type="password"
                       placeholder="••••••"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
-                      className="pl-10 bg-gray-50 border-gray-200 focus:bg-white focus:border-emerald-400"
+                      className="h-12 pl-12 bg-gray-50 border-2 border-gray-100 focus:border-violet-400 focus:bg-white"
                       required
                     />
                   </div>
                 </div>
               </div>
 
-              <div className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-xl p-4 text-sm border border-emerald-100">
-                <p className="font-medium text-gray-700 mb-2 flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-emerald-500" />
+              <div className="bg-gradient-to-r from-violet-50 to-purple-50 rounded-xl p-5 text-sm border-2 border-violet-100">
+                <p className="font-semibold text-violet-700 mb-3 flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4" />
                   Cette configuration va :
                 </p>
-                <ul className="space-y-1 text-gray-600 ml-6">
-                  <li>• Créer votre compte administrateur</li>
-                  <li>• Initialiser les catégories de pièces par défaut</li>
-                  <li>• Configurer les paramètres de base</li>
+                <ul className="space-y-2 text-violet-600 ml-6">
+                  <li className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-violet-400" />
+                    Créer votre compte administrateur
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-violet-400" />
+                    Initialiser les catégories de pièces par défaut
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-violet-400" />
+                    Configurer les paramètres de base
+                  </li>
                 </ul>
               </div>
 
               <Button
                 type="submit"
-                className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-md shadow-emerald-200"
+                className="w-full h-12 bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 text-white shadow-lg shadow-violet-500/25 font-medium"
                 disabled={isLoading}
               >
                 {isLoading ? (
                   <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                     Configuration en cours...
                   </>
                 ) : (
-                  'Initialiser l\'application'
+                  <>
+                    <Rocket className="w-5 h-5 mr-2" />
+                    Initialiser l&apos;application
+                  </>
                 )}
               </Button>
             </form>
