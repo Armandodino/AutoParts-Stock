@@ -12,7 +12,9 @@ import {
   DollarSign,
   ArrowUpRight,
   ArrowDownRight,
-  RefreshCw
+  RefreshCw,
+  Sparkles,
+  Activity
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -92,18 +94,21 @@ export default function Dashboard() {
 
   const getMovementTypeLabel = (type: string) => {
     switch (type) {
-      case 'ENTRY': return { label: 'Entrée', color: 'bg-green-500', icon: ArrowDownRight };
-      case 'EXIT': return { label: 'Sortie', color: 'bg-red-500', icon: ArrowUpRight };
-      case 'ADJUST': return { label: 'Ajustement', color: 'bg-blue-500', icon: RefreshCw };
-      case 'RETURN': return { label: 'Retour', color: 'bg-orange-500', icon: ArrowDownRight };
-      default: return { label: type, color: 'bg-gray-500', icon: ArrowUpRight };
+      case 'ENTRY': return { label: 'Entrée', bgColor: 'bg-emerald-100', textColor: 'text-emerald-700', icon: ArrowDownRight };
+      case 'EXIT': return { label: 'Sortie', bgColor: 'bg-rose-100', textColor: 'text-rose-700', icon: ArrowUpRight };
+      case 'ADJUST': return { label: 'Ajustement', bgColor: 'bg-sky-100', textColor: 'text-sky-700', icon: RefreshCw };
+      case 'RETURN': return { label: 'Retour', bgColor: 'bg-amber-100', textColor: 'text-amber-700', icon: ArrowDownRight };
+      default: return { label: type, bgColor: 'bg-gray-100', textColor: 'text-gray-700', icon: ArrowUpRight };
     }
   };
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <RefreshCw className="w-8 h-8 animate-spin text-primary" />
+        <div className="flex flex-col items-center gap-4">
+          <RefreshCw className="w-8 h-8 animate-spin text-emerald-500" />
+          <p className="text-gray-500">Chargement des données...</p>
+        </div>
       </div>
     );
   }
@@ -111,8 +116,9 @@ export default function Dashboard() {
   if (!stats) {
     return (
       <div className="text-center py-12">
-        <p className="text-muted-foreground">Erreur lors du chargement des données</p>
-        <Button onClick={fetchDashboardStats} className="mt-4">
+        <AlertTriangle className="w-12 h-12 mx-auto text-amber-500 mb-4" />
+        <p className="text-gray-600 mb-4">Erreur lors du chargement des données</p>
+        <Button onClick={fetchDashboardStats} className="bg-emerald-500 hover:bg-emerald-600">
           Réessayer
         </Button>
       </div>
@@ -120,66 +126,76 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Page header */}
-      <div>
-        <h1 className="text-3xl font-bold text-white">Tableau de bord</h1>
-        <p className="text-muted-foreground">Vue d&apos;ensemble de votre stock</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">Tableau de bord</h1>
+          <p className="text-gray-500 mt-1">Vue d&apos;ensemble de votre stock</p>
+        </div>
+        <Button 
+          onClick={fetchDashboardStats}
+          variant="outline"
+          className="gap-2"
+        >
+          <RefreshCw className="w-4 h-4" />
+          Actualiser
+        </Button>
       </div>
 
       {/* Stats cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-slate-800/50 border-slate-700">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+        <Card className="border-0 shadow-lg shadow-gray-100/50 bg-gradient-to-br from-white to-gray-50/50 hover:shadow-xl transition-shadow">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Total pièces</p>
-                <p className="text-3xl font-bold text-white">{stats.totalParts}</p>
+                <p className="text-sm font-medium text-gray-500">Total pièces</p>
+                <p className="text-3xl font-bold text-gray-900 mt-1">{stats.totalParts}</p>
               </div>
-              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                <Package className="w-6 h-6 text-primary" />
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center shadow-md shadow-emerald-200">
+                <Package className="w-6 h-6 text-white" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800/50 border-slate-700">
+        <Card className="border-0 shadow-lg shadow-gray-100/50 bg-gradient-to-br from-white to-emerald-50/30 hover:shadow-xl transition-shadow">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Valeur totale</p>
-                <p className="text-3xl font-bold text-white">{formatCurrency(stats.totalValue)}</p>
+                <p className="text-sm font-medium text-gray-500">Valeur totale</p>
+                <p className="text-2xl font-bold text-gray-900 mt-1">{formatCurrency(stats.totalValue)}</p>
               </div>
-              <div className="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center">
-                <DollarSign className="w-6 h-6 text-green-500" />
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-400 flex items-center justify-center shadow-md shadow-emerald-100">
+                <DollarSign className="w-6 h-6 text-white" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800/50 border-slate-700">
+        <Card className="border-0 shadow-lg shadow-gray-100/50 bg-gradient-to-br from-white to-amber-50/30 hover:shadow-xl transition-shadow">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Stock faible</p>
-                <p className="text-3xl font-bold text-yellow-500">{stats.lowStockCount}</p>
+                <p className="text-sm font-medium text-gray-500">Stock faible</p>
+                <p className="text-3xl font-bold text-amber-600 mt-1">{stats.lowStockCount}</p>
               </div>
-              <div className="w-12 h-12 rounded-xl bg-yellow-500/10 flex items-center justify-center">
-                <TrendingDown className="w-6 h-6 text-yellow-500" />
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400 to-orange-400 flex items-center justify-center shadow-md shadow-amber-100">
+                <TrendingDown className="w-6 h-6 text-white" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800/50 border-slate-700">
+        <Card className="border-0 shadow-lg shadow-gray-100/50 bg-gradient-to-br from-white to-rose-50/30 hover:shadow-xl transition-shadow">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Rupture de stock</p>
-                <p className="text-3xl font-bold text-red-500">{stats.outOfStockCount}</p>
+                <p className="text-sm font-medium text-gray-500">Rupture de stock</p>
+                <p className="text-3xl font-bold text-rose-600 mt-1">{stats.outOfStockCount}</p>
               </div>
-              <div className="w-12 h-12 rounded-xl bg-red-500/10 flex items-center justify-center">
-                <AlertTriangle className="w-6 h-6 text-red-500" />
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-rose-400 to-red-400 flex items-center justify-center shadow-md shadow-rose-100">
+                <AlertTriangle className="w-6 h-6 text-white" />
               </div>
             </div>
           </CardContent>
@@ -187,25 +203,46 @@ export default function Dashboard() {
       </div>
 
       {/* Revenue cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="bg-slate-800/50 border-slate-700">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <Card className="border-0 shadow-lg shadow-gray-100/50 bg-gradient-to-br from-white to-sky-50/30">
           <CardContent className="p-6">
-            <p className="text-sm text-muted-foreground">Mouvements aujourd&apos;hui</p>
-            <p className="text-2xl font-bold text-white">{stats.todayMovements}</p>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-sky-100 flex items-center justify-center">
+                <Activity className="w-5 h-5 text-sky-600" />
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">Mouvements aujourd&apos;hui</p>
+                <p className="text-2xl font-bold text-gray-900">{stats.todayMovements}</p>
+              </div>
+            </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800/50 border-slate-700">
+        <Card className="border-0 shadow-lg shadow-gray-100/50 bg-gradient-to-br from-white to-emerald-50/30">
           <CardContent className="p-6">
-            <p className="text-sm text-muted-foreground">Chiffre d&apos;affaires du jour</p>
-            <p className="text-2xl font-bold text-green-500">{formatCurrency(stats.todayRevenue)}</p>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center">
+                <TrendingUp className="w-5 h-5 text-emerald-600" />
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">CA du jour</p>
+                <p className="text-xl font-bold text-emerald-600">{formatCurrency(stats.todayRevenue)}</p>
+              </div>
+            </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800/50 border-slate-700">
+        <Card className="border-0 shadow-lg shadow-gray-100/50 bg-gradient-to-br from-white to-teal-50/30">
           <CardContent className="p-6">
-            <p className="text-sm text-muted-foreground">Chiffre d&apos;affaires du mois</p>
-            <p className="text-2xl font-bold text-primary">{formatCurrency(stats.monthlyRevenue)}</p>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-teal-100 flex items-center justify-center">
+                <Sparkles className="w-5 h-5 text-teal-600" />
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">CA du mois</p>
+                <p className="text-xl font-bold text-teal-600">{formatCurrency(stats.monthlyRevenue)}</p>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -213,42 +250,64 @@ export default function Dashboard() {
       {/* Main content grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Category stats */}
-        <Card className="lg:col-span-1 bg-slate-800/50 border-slate-700">
-          <CardHeader>
-            <CardTitle className="text-white">Répartition par catégorie</CardTitle>
+        <Card className="lg:col-span-1 border-0 shadow-lg shadow-gray-100/50">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-gray-900">Répartition par catégorie</CardTitle>
+            <CardDescription>Vue par catégorie de votre inventaire</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {stats.categoryStats.length === 0 ? (
-                <p className="text-center text-muted-foreground py-4">Aucune catégorie</p>
+                <div className="text-center py-6">
+                  <Package className="w-10 h-10 mx-auto text-gray-300 mb-2" />
+                  <p className="text-gray-400 text-sm">Aucune catégorie</p>
+                </div>
               ) : (
-                stats.categoryStats.slice(0, 6).map((cat) => (
-                  <div key={cat.categoryId} className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-white">{cat.categoryName}</span>
-                      <span className="text-muted-foreground">{cat.partCount} pièces</span>
+                stats.categoryStats.slice(0, 6).map((cat, index) => {
+                  const maxCount = Math.max(...stats.categoryStats.map(c => c.partCount));
+                  const percentage = (cat.partCount / maxCount) * 100;
+                  const colors = [
+                    'from-emerald-500 to-teal-500',
+                    'from-sky-500 to-blue-500',
+                    'from-violet-500 to-purple-500',
+                    'from-amber-500 to-orange-500',
+                    'from-rose-500 to-pink-500',
+                    'from-cyan-500 to-teal-500',
+                  ];
+                  
+                  return (
+                    <div key={cat.categoryId} className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="font-medium text-gray-700">{cat.categoryName}</span>
+                        <span className="text-gray-400">{cat.partCount} pièces</span>
+                      </div>
+                      <div className="h-2 rounded-full bg-gray-100 overflow-hidden">
+                        <div 
+                          className={`h-full rounded-full bg-gradient-to-r ${colors[index % colors.length]}`}
+                          style={{ width: `${percentage}%` }}
+                        />
+                      </div>
                     </div>
-                    <Progress 
-                      value={(cat.partCount / Math.max(...stats.categoryStats.map(c => c.partCount))) * 100} 
-                      className="h-2"
-                    />
-                  </div>
-                ))
+                  );
+                })
               )}
             </div>
           </CardContent>
         </Card>
 
         {/* Recent movements */}
-        <Card className="lg:col-span-2 bg-slate-800/50 border-slate-700">
-          <CardHeader>
-            <CardTitle className="text-white">Mouvements récents</CardTitle>
+        <Card className="lg:col-span-2 border-0 shadow-lg shadow-gray-100/50">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-gray-900">Mouvements récents</CardTitle>
             <CardDescription>Les dernières opérations de stock</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
               {stats.recentMovements.length === 0 ? (
-                <p className="text-center text-muted-foreground py-4">Aucun mouvement récent</p>
+                <div className="text-center py-6">
+                  <Activity className="w-10 h-10 mx-auto text-gray-300 mb-2" />
+                  <p className="text-gray-400 text-sm">Aucun mouvement récent</p>
+                </div>
               ) : (
                 stats.recentMovements.map((movement) => {
                   const typeInfo = getMovementTypeLabel(movement.type);
@@ -257,26 +316,26 @@ export default function Dashboard() {
                   return (
                     <div 
                       key={movement.id} 
-                      className="flex items-center justify-between p-3 rounded-lg bg-slate-700/30"
+                      className="flex items-center justify-between p-4 rounded-xl bg-gray-50/50 hover:bg-gray-100/50 transition-colors"
                     >
                       <div className="flex items-center gap-3">
-                        <div className={`w-8 h-8 rounded-lg ${typeInfo.color}/20 flex items-center justify-center`}>
-                          <Icon className={`w-4 h-4 ${typeInfo.color.replace('bg-', 'text-')}`} />
+                        <div className={`w-10 h-10 rounded-xl ${typeInfo.bgColor} flex items-center justify-center`}>
+                          <Icon className={`w-5 h-5 ${typeInfo.textColor}`} />
                         </div>
                         <div>
-                          <p className="font-medium text-white">
+                          <p className="font-medium text-gray-900">
                             {movement.part?.name || 'Pièce inconnue'}
                           </p>
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-sm text-gray-400">
                             {movement.part?.reference} • {formatDate(movement.createdAt)}
                           </p>
                         </div>
                       </div>
-                      <div className="text-right">
-                        <Badge variant="outline" className={`${typeInfo.color}/20 border-0`}>
+                      <div className="text-right flex items-center gap-3">
+                        <Badge className={`${typeInfo.bgColor} ${typeInfo.textColor} border-0 font-medium`}>
                           {typeInfo.label}
                         </Badge>
-                        <p className="text-sm text-muted-foreground mt-1">
+                        <p className="text-sm text-gray-500">
                           Qté: {movement.quantity}
                         </p>
                       </div>
@@ -291,10 +350,10 @@ export default function Dashboard() {
 
       {/* Alerts */}
       {stats.alerts.length > 0 && (
-        <Card className="bg-slate-800/50 border-slate-700">
-          <CardHeader>
-            <CardTitle className="text-white flex items-center gap-2">
-              <AlertTriangle className="w-5 h-5 text-yellow-500" />
+        <Card className="border-0 shadow-lg shadow-gray-100/50">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-gray-900 flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5 text-amber-500" />
               Alertes actives
             </CardTitle>
           </CardHeader>
@@ -303,18 +362,18 @@ export default function Dashboard() {
               {stats.alerts.slice(0, 6).map((alert) => (
                 <div 
                   key={alert.id}
-                  className={`p-4 rounded-lg ${
+                  className={`p-4 rounded-xl ${
                     alert.type === 'out_of_stock' 
-                      ? 'bg-red-500/10 border border-red-500/20' 
-                      : 'bg-yellow-500/10 border border-yellow-500/20'
+                      ? 'bg-rose-50 border border-rose-100' 
+                      : 'bg-amber-50 border border-amber-100'
                   }`}
                 >
                   <p className={`font-medium ${
-                    alert.type === 'out_of_stock' ? 'text-red-400' : 'text-yellow-400'
+                    alert.type === 'out_of_stock' ? 'text-rose-700' : 'text-amber-700'
                   }`}>
                     {alert.title}
                   </p>
-                  <p className="text-sm text-muted-foreground mt-1">{alert.message}</p>
+                  <p className="text-sm text-gray-500 mt-1">{alert.message}</p>
                 </div>
               ))}
             </div>

@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { 
   Table, 
@@ -49,7 +49,8 @@ import {
   Upload,
   X,
   Filter,
-  Download
+  Download,
+  Sparkles
 } from 'lucide-react';
 
 interface Part {
@@ -91,12 +92,12 @@ export default function PartsPage() {
   const [editingPart, setEditingPart] = useState<Part | null>(null);
   const [selectedPartForStock, setSelectedPartForStock] = useState<Part | null>(null);
 
-  // Form states
+  // Form states - Initialize with 'none' as default for categoryId
   const [formData, setFormData] = useState({
     name: '',
     reference: '',
     description: '',
-    categoryId: '',
+    categoryId: 'none',
     purchasePrice: '0',
     sellingPrice: '0',
     quantity: '0',
@@ -178,7 +179,7 @@ export default function PartsPage() {
         name: '',
         reference: '',
         description: '',
-        categoryId: categories[0]?.id || '',
+        categoryId: categories[0]?.id || 'none',
         purchasePrice: '0',
         sellingPrice: '0',
         quantity: '0',
@@ -192,6 +193,11 @@ export default function PartsPage() {
   };
 
   const handleSavePart = async () => {
+    if (formData.categoryId === 'none') {
+      toast.error('Veuillez sélectionner une catégorie');
+      return;
+    }
+
     try {
       const url = editingPart ? `/api/parts/${editingPart.id}` : '/api/parts';
       const method = editingPart ? 'PUT' : 'POST';
@@ -312,9 +318,9 @@ export default function PartsPage() {
   };
 
   const getStockStatus = (part: Part) => {
-    if (part.quantity <= 0) return { label: 'Rupture', color: 'bg-red-500' };
-    if (part.quantity <= part.minStock) return { label: 'Stock faible', color: 'bg-yellow-500' };
-    return { label: 'OK', color: 'bg-green-500' };
+    if (part.quantity <= 0) return { label: 'Rupture', bgColor: 'bg-rose-100', textColor: 'text-rose-700' };
+    if (part.quantity <= part.minStock) return { label: 'Stock faible', bgColor: 'bg-amber-100', textColor: 'text-amber-700' };
+    return { label: 'OK', bgColor: 'bg-emerald-100', textColor: 'text-emerald-700' };
   };
 
   return (
@@ -322,36 +328,36 @@ export default function PartsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-white">Pièces automobiles</h1>
-          <p className="text-muted-foreground">Gérez votre inventaire de pièces</p>
+          <h1 className="text-3xl font-bold text-gray-900">Pièces automobiles</h1>
+          <p className="text-gray-500 mt-1">Gérez votre inventaire de pièces</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={handleExport}>
-            <Download className="w-4 h-4 mr-2" />
+          <Button variant="outline" onClick={handleExport} className="gap-2">
+            <Download className="w-4 h-4" />
             Exporter
           </Button>
-          <Button onClick={() => handleOpenPartDialog()}>
-            <Plus className="w-4 h-4 mr-2" />
+          <Button onClick={() => handleOpenPartDialog()} className="gap-2 bg-emerald-500 hover:bg-emerald-600">
+            <Plus className="w-4 h-4" />
             Nouvelle pièce
           </Button>
         </div>
       </div>
 
       {/* Filters */}
-      <Card className="bg-slate-800/50 border-slate-700">
-        <CardContent className="p-4">
+      <Card className="border-0 shadow-lg shadow-gray-100/50">
+        <CardContent className="p-5">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input
                 placeholder="Rechercher par nom, référence ou code-barres..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="pl-10 bg-slate-700/50 border-slate-600"
+                className="pl-10 bg-gray-50 border-gray-200 focus:bg-white"
               />
             </div>
             <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-              <SelectTrigger className="w-full sm:w-48 bg-slate-700/50 border-slate-600">
+              <SelectTrigger className="w-full sm:w-48 bg-gray-50 border-gray-200">
                 <SelectValue placeholder="Toutes catégories" />
               </SelectTrigger>
               <SelectContent>
@@ -366,7 +372,7 @@ export default function PartsPage() {
             <Button 
               variant="outline" 
               onClick={() => setShowFilters(!showFilters)}
-              className={showFilters ? 'bg-primary/10' : ''}
+              className={showFilters ? 'bg-emerald-50 border-emerald-200 text-emerald-700' : ''}
             >
               <Filter className="w-4 h-4 mr-2" />
               Filtres
@@ -374,24 +380,24 @@ export default function PartsPage() {
           </div>
 
           {showFilters && (
-            <div className="flex gap-4 mt-4 pt-4 border-t border-slate-700">
+            <div className="flex gap-6 mt-4 pt-4 border-t border-gray-100">
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={filterLowStock}
                   onChange={(e) => setFilterLowStock(e.target.checked)}
-                  className="rounded border-slate-600"
+                  className="w-4 h-4 rounded border-gray-300 text-emerald-500 focus:ring-emerald-500"
                 />
-                <span className="text-sm text-muted-foreground">Stock faible</span>
+                <span className="text-sm text-gray-600">Stock faible</span>
               </label>
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={filterOutOfStock}
                   onChange={(e) => setFilterOutOfStock(e.target.checked)}
-                  className="rounded border-slate-600"
+                  className="w-4 h-4 rounded border-gray-300 text-emerald-500 focus:ring-emerald-500"
                 />
-                <span className="text-sm text-muted-foreground">Rupture de stock</span>
+                <span className="text-sm text-gray-600">Rupture de stock</span>
               </label>
             </div>
           )}
@@ -399,35 +405,39 @@ export default function PartsPage() {
       </Card>
 
       {/* Parts table */}
-      <Card className="bg-slate-800/50 border-slate-700">
+      <Card className="border-0 shadow-lg shadow-gray-100/50">
         <CardContent className="p-0">
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
-                <TableRow className="border-slate-700 hover:bg-slate-700/50">
-                  <TableHead className="text-slate-400">Pièce</TableHead>
-                  <TableHead className="text-slate-400">Catégorie</TableHead>
-                  <TableHead className="text-slate-400">Prix achat</TableHead>
-                  <TableHead className="text-slate-400">Prix vente</TableHead>
-                  <TableHead className="text-slate-400">Stock</TableHead>
-                  <TableHead className="text-slate-400">Statut</TableHead>
-                  <TableHead className="text-slate-400 text-right">Actions</TableHead>
+                <TableRow className="border-b border-gray-100 hover:bg-transparent">
+                  <TableHead className="text-gray-500 font-medium">Pièce</TableHead>
+                  <TableHead className="text-gray-500 font-medium">Catégorie</TableHead>
+                  <TableHead className="text-gray-500 font-medium">Prix achat</TableHead>
+                  <TableHead className="text-gray-500 font-medium">Prix vente</TableHead>
+                  <TableHead className="text-gray-500 font-medium">Stock</TableHead>
+                  <TableHead className="text-gray-500 font-medium">Statut</TableHead>
+                  <TableHead className="text-gray-500 font-medium text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {isLoading ? (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center py-8">
-                      <Package className="w-8 h-8 mx-auto animate-pulse text-muted-foreground" />
-                      <p className="mt-2 text-muted-foreground">Chargement...</p>
+                    <TableCell colSpan={7} className="text-center py-12">
+                      <Package className="w-10 h-10 mx-auto animate-pulse text-gray-300" />
+                      <p className="mt-2 text-gray-400">Chargement...</p>
                     </TableCell>
                   </TableRow>
                 ) : parts.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center py-8">
-                      <Package className="w-12 h-12 mx-auto text-muted-foreground mb-2" />
-                      <p className="text-muted-foreground">Aucune pièce trouvée</p>
-                      <Button className="mt-4" onClick={() => handleOpenPartDialog()}>
+                    <TableCell colSpan={7} className="text-center py-12">
+                      <div className="w-16 h-16 mx-auto rounded-2xl bg-gray-100 flex items-center justify-center mb-3">
+                        <Package className="w-8 h-8 text-gray-300" />
+                      </div>
+                      <p className="text-gray-500 font-medium">Aucune pièce trouvée</p>
+                      <p className="text-gray-400 text-sm mt-1">Commencez par ajouter votre première pièce</p>
+                      <Button className="mt-4 bg-emerald-500 hover:bg-emerald-600" onClick={() => handleOpenPartDialog()}>
+                        <Plus className="w-4 h-4 mr-2" />
                         Ajouter une pièce
                       </Button>
                     </TableCell>
@@ -436,68 +446,70 @@ export default function PartsPage() {
                   parts.map((part) => {
                     const status = getStockStatus(part);
                     return (
-                      <TableRow key={part.id} className="border-slate-700 hover:bg-slate-700/30">
+                      <TableRow key={part.id} className="border-b border-gray-50 hover:bg-gray-50/50">
                         <TableCell>
                           <div className="flex items-center gap-3">
                             {part.imageUrl ? (
                               <img 
                                 src={part.imageUrl} 
                                 alt={part.name}
-                                className="w-10 h-10 rounded-lg object-cover"
+                                className="w-11 h-11 rounded-xl object-cover shadow-sm"
                               />
                             ) : (
-                              <div className="w-10 h-10 rounded-lg bg-slate-700 flex items-center justify-center">
-                                <Package className="w-5 h-5 text-muted-foreground" />
+                              <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-gray-100 to-gray-50 flex items-center justify-center">
+                                <Package className="w-5 h-5 text-gray-400" />
                               </div>
                             )}
                             <div>
-                              <p className="font-medium text-white">{part.name}</p>
-                              <p className="text-sm text-muted-foreground">{part.reference}</p>
+                              <p className="font-medium text-gray-900">{part.name}</p>
+                              <p className="text-sm text-gray-400">{part.reference}</p>
                             </div>
                           </div>
                         </TableCell>
-                        <TableCell className="text-slate-300">
-                          {part.category?.name || '-'}
+                        <TableCell className="text-gray-600">
+                          <Badge variant="outline" className="font-normal border-gray-200 text-gray-600">
+                            {part.category?.name || '-'}
+                          </Badge>
                         </TableCell>
-                        <TableCell className="text-slate-300">
+                        <TableCell className="text-gray-600">
                           {formatCurrency(part.purchasePrice)}
                         </TableCell>
-                        <TableCell className="text-slate-300">
+                        <TableCell className="text-gray-600">
                           {formatCurrency(part.sellingPrice)}
                         </TableCell>
                         <TableCell>
-                          <span className="text-lg font-semibold text-white">{part.quantity}</span>
+                          <span className="text-lg font-semibold text-gray-900">{part.quantity}</span>
                         </TableCell>
                         <TableCell>
-                          <Badge className={`${status.color} text-white`}>
+                          <Badge className={`${status.bgColor} ${status.textColor} border-0 font-medium`}>
                             {status.label}
                           </Badge>
                         </TableCell>
                         <TableCell className="text-right">
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="icon">
-                                <MoreVertical className="w-4 h-4" />
+                              <Button variant="ghost" size="icon" className="hover:bg-gray-100">
+                                <MoreVertical className="w-4 h-4 text-gray-400" />
                               </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem onClick={() => handleOpenPartDialog(part)}>
-                                <Edit className="w-4 h-4 mr-2" />
+                            <DropdownMenuContent align="end" className="w-48">
+                              <DropdownMenuItem onClick={() => handleOpenPartDialog(part)} className="gap-2">
+                                <Edit className="w-4 h-4 text-gray-400" />
                                 Modifier
                               </DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => handleOpenStockDialog(part, 'ENTRY')}>
-                                <ArrowDownRight className="w-4 h-4 mr-2 text-green-500" />
+                              <DropdownMenuItem onClick={() => handleOpenStockDialog(part, 'ENTRY')} className="gap-2">
+                                <ArrowDownRight className="w-4 h-4 text-emerald-500" />
                                 Entrée stock
                               </DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => handleOpenStockDialog(part, 'EXIT')}>
-                                <ArrowUpRight className="w-4 h-4 mr-2 text-red-500" />
+                              <DropdownMenuItem onClick={() => handleOpenStockDialog(part, 'EXIT')} className="gap-2">
+                                <ArrowUpRight className="w-4 h-4 text-rose-500" />
                                 Sortie stock
                               </DropdownMenuItem>
                               <DropdownMenuItem 
                                 onClick={() => handleDeletePart(part.id)}
-                                className="text-red-500 focus:text-red-500"
+                                className="gap-2 text-rose-600 focus:text-rose-600"
                               >
-                                <Trash2 className="w-4 h-4 mr-2" />
+                                <Trash2 className="w-4 h-4" />
                                 Supprimer
                               </DropdownMenuItem>
                             </DropdownMenuContent>
@@ -515,9 +527,9 @@ export default function PartsPage() {
 
       {/* Part Dialog */}
       <Dialog open={showPartDialog} onOpenChange={setShowPartDialog}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-slate-800 border-slate-700">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white border-0 shadow-2xl">
           <DialogHeader>
-            <DialogTitle className="text-white">
+            <DialogTitle className="text-xl">
               {editingPart ? 'Modifier la pièce' : 'Nouvelle pièce'}
             </DialogTitle>
             <DialogDescription>
@@ -525,104 +537,114 @@ export default function PartsPage() {
             </DialogDescription>
           </DialogHeader>
 
-          <div className="grid grid-cols-2 gap-4 py-4">
+          <div className="grid grid-cols-2 gap-5 py-4">
             <div className="space-y-2">
-              <Label className="text-slate-200">Nom *</Label>
+              <Label>Nom *</Label>
               <Input
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="bg-slate-700/50 border-slate-600"
+                className="bg-gray-50 border-gray-200 focus:bg-white"
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-slate-200">Référence *</Label>
+              <Label>Référence *</Label>
               <Input
                 value={formData.reference}
                 onChange={(e) => setFormData({ ...formData, reference: e.target.value })}
-                className="bg-slate-700/50 border-slate-600"
+                className="bg-gray-50 border-gray-200 focus:bg-white"
               />
             </div>
             <div className="col-span-2 space-y-2">
-              <Label className="text-slate-200">Catégorie *</Label>
+              <Label>Catégorie *</Label>
               <Select 
                 value={formData.categoryId} 
                 onValueChange={(v) => setFormData({ ...formData, categoryId: v })}
               >
-                <SelectTrigger className="bg-slate-700/50 border-slate-600">
+                <SelectTrigger className="bg-gray-50 border-gray-200">
                   <SelectValue placeholder="Sélectionner une catégorie" />
                 </SelectTrigger>
                 <SelectContent>
-                  {categories.map((cat) => (
-                    <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
-                  ))}
+                  {categories.length === 0 ? (
+                    <SelectItem value="none" disabled>Aucune catégorie disponible</SelectItem>
+                  ) : (
+                    categories.map((cat) => (
+                      <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
+                    ))
+                  )}
                 </SelectContent>
               </Select>
+              {categories.length === 0 && (
+                <p className="text-sm text-amber-600 flex items-center gap-1">
+                  <Sparkles className="w-3 h-3" />
+                  Créez des catégories dans Paramètres
+                </p>
+              )}
             </div>
             <div className="col-span-2 space-y-2">
-              <Label className="text-slate-200">Description</Label>
+              <Label>Description</Label>
               <Textarea
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="bg-slate-700/50 border-slate-600"
+                className="bg-gray-50 border-gray-200 focus:bg-white"
                 rows={2}
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-slate-200">Prix d&apos;achat</Label>
+              <Label>Prix d&apos;achat</Label>
               <Input
                 type="number"
                 value={formData.purchasePrice}
                 onChange={(e) => setFormData({ ...formData, purchasePrice: e.target.value })}
-                className="bg-slate-700/50 border-slate-600"
+                className="bg-gray-50 border-gray-200 focus:bg-white"
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-slate-200">Prix de vente</Label>
+              <Label>Prix de vente</Label>
               <Input
                 type="number"
                 value={formData.sellingPrice}
                 onChange={(e) => setFormData({ ...formData, sellingPrice: e.target.value })}
-                className="bg-slate-700/50 border-slate-600"
+                className="bg-gray-50 border-gray-200 focus:bg-white"
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-slate-200">Quantité initiale</Label>
+              <Label>Quantité initiale</Label>
               <Input
                 type="number"
                 value={formData.quantity}
                 onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
-                className="bg-slate-700/50 border-slate-600"
+                className="bg-gray-50 border-gray-200 focus:bg-white"
                 disabled={!!editingPart}
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-slate-200">Stock minimum (alerte)</Label>
+              <Label>Stock minimum (alerte)</Label>
               <Input
                 type="number"
                 value={formData.minStock}
                 onChange={(e) => setFormData({ ...formData, minStock: e.target.value })}
-                className="bg-slate-700/50 border-slate-600"
+                className="bg-gray-50 border-gray-200 focus:bg-white"
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-slate-200">Emplacement</Label>
+              <Label>Emplacement</Label>
               <Input
                 value={formData.location}
                 onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                 placeholder="Ex: Étagère A, Rayon 3"
-                className="bg-slate-700/50 border-slate-600"
+                className="bg-gray-50 border-gray-200 focus:bg-white"
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-slate-200">Code-barres</Label>
+              <Label>Code-barres</Label>
               <Input
                 value={formData.barcode}
                 onChange={(e) => setFormData({ ...formData, barcode: e.target.value })}
-                className="bg-slate-700/50 border-slate-600"
+                className="bg-gray-50 border-gray-200 focus:bg-white"
               />
             </div>
             <div className="col-span-2 space-y-2">
-              <Label className="text-slate-200">Photo de la pièce</Label>
+              <Label>Photo de la pièce</Label>
               <div className="flex gap-4 items-start">
                 <input
                   type="file"
@@ -636,35 +658,35 @@ export default function PartsPage() {
                     <img 
                       src={formData.imageUrl} 
                       alt="Pièce"
-                      className="w-24 h-24 rounded-lg object-cover"
+                      className="w-24 h-24 rounded-xl object-cover shadow-md"
                     />
                     <Button
                       variant="destructive"
                       size="icon"
-                      className="absolute -top-2 -right-2 h-6 w-6"
+                      className="absolute -top-2 -right-2 h-6 w-6 rounded-full shadow-md"
                       onClick={() => setFormData({ ...formData, imageUrl: '' })}
                     >
-                      <X className="w-4 h-4" />
+                      <X className="w-3 h-3" />
                     </Button>
                   </div>
                 ) : (
                   <Button
                     variant="outline"
                     onClick={() => fileInputRef.current?.click()}
-                    className="w-24 h-24 border-dashed"
+                    className="w-24 h-24 border-dashed border-2 border-gray-200 hover:border-emerald-400 hover:bg-emerald-50"
                   >
-                    <Upload className="w-6 h-6" />
+                    <Upload className="w-6 h-6 text-gray-400" />
                   </Button>
                 )}
               </div>
             </div>
           </div>
 
-          <DialogFooter>
+          <DialogFooter className="gap-2">
             <Button variant="outline" onClick={() => setShowPartDialog(false)}>
               Annuler
             </Button>
-            <Button onClick={handleSavePart}>
+            <Button onClick={handleSavePart} className="bg-emerald-500 hover:bg-emerald-600">
               {editingPart ? 'Modifier' : 'Créer'}
             </Button>
           </DialogFooter>
@@ -673,9 +695,9 @@ export default function PartsPage() {
 
       {/* Stock Movement Dialog */}
       <Dialog open={showStockDialog} onOpenChange={setShowStockDialog}>
-        <DialogContent className="bg-slate-800 border-slate-700">
+        <DialogContent className="bg-white border-0 shadow-2xl">
           <DialogHeader>
-            <DialogTitle className="text-white">
+            <DialogTitle className="text-xl">
               {stockData.type === 'ENTRY' ? 'Entrée de stock' : 'Sortie de stock'}
             </DialogTitle>
             <DialogDescription>
@@ -685,25 +707,25 @@ export default function PartsPage() {
 
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label className="text-slate-200">Quantité</Label>
+              <Label>Quantité</Label>
               <Input
                 type="number"
                 value={stockData.quantity}
                 onChange={(e) => setStockData({ ...stockData, quantity: e.target.value })}
-                className="bg-slate-700/50 border-slate-600"
+                className="bg-gray-50 border-gray-200 focus:bg-white"
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-slate-200">Prix unitaire</Label>
+              <Label>Prix unitaire</Label>
               <Input
                 type="number"
                 value={stockData.unitPrice}
                 onChange={(e) => setStockData({ ...stockData, unitPrice: e.target.value })}
-                className="bg-slate-700/50 border-slate-600"
+                className="bg-gray-50 border-gray-200 focus:bg-white"
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-slate-200">
+              <Label>
                 {stockData.type === 'ENTRY' ? 'Fournisseur' : 'Client'}
               </Label>
               <Input
@@ -713,35 +735,35 @@ export default function PartsPage() {
                     ? setStockData({ ...stockData, supplier: e.target.value })
                     : setStockData({ ...stockData, customer: e.target.value })
                 }
-                className="bg-slate-700/50 border-slate-600"
+                className="bg-gray-50 border-gray-200 focus:bg-white"
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-slate-200">Motif</Label>
+              <Label>Motif</Label>
               <Input
                 value={stockData.reason}
                 onChange={(e) => setStockData({ ...stockData, reason: e.target.value })}
-                className="bg-slate-700/50 border-slate-600"
+                className="bg-gray-50 border-gray-200 focus:bg-white"
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-slate-200">Notes</Label>
+              <Label>Notes</Label>
               <Textarea
                 value={stockData.notes}
                 onChange={(e) => setStockData({ ...stockData, notes: e.target.value })}
-                className="bg-slate-700/50 border-slate-600"
+                className="bg-gray-50 border-gray-200 focus:bg-white"
                 rows={2}
               />
             </div>
           </div>
 
-          <DialogFooter>
+          <DialogFooter className="gap-2">
             <Button variant="outline" onClick={() => setShowStockDialog(false)}>
               Annuler
             </Button>
             <Button 
               onClick={handleSaveMovement}
-              className={stockData.type === 'ENTRY' ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'}
+              className={stockData.type === 'ENTRY' ? 'bg-emerald-500 hover:bg-emerald-600' : 'bg-rose-500 hover:bg-rose-600'}
             >
               Confirmer
             </Button>

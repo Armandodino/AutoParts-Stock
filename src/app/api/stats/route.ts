@@ -48,8 +48,21 @@ export async function GET() {
     const recentMovements = await db.movement.findMany({
       take: 10,
       orderBy: { createdAt: 'desc' },
-      include: {
-        part: { include: { category: true } }
+      select: {
+        id: true,
+        type: true,
+        quantity: true,
+        totalPrice: true,
+        createdAt: true,
+        part: {
+          select: {
+            name: true,
+            reference: true,
+            category: {
+              select: { name: true }
+            }
+          }
+        }
       }
     });
 
@@ -58,7 +71,20 @@ export async function GET() {
       where: { isResolved: false },
       orderBy: { createdAt: 'desc' },
       take: 10,
-      include: { part: true }
+      select: {
+        id: true,
+        type: true,
+        title: true,
+        message: true,
+        createdAt: true,
+        part: {
+          select: {
+            name: true,
+            reference: true,
+            quantity: true
+          }
+        }
+      }
     });
 
     // Get category stats

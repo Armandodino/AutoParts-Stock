@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { User, Lock, Mail, AlertCircle, Loader2, CheckCircle } from 'lucide-react';
+import { User, Lock, Mail, AlertCircle, Loader2, CheckCircle, Wrench, Settings } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface SetupPageProps {
@@ -61,32 +61,30 @@ export default function SetupPage({ onComplete }: SetupPageProps) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-50 via-white to-teal-50 p-4">
       <div className="w-full max-w-lg">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-primary/10 mb-4">
-            <svg className="w-10 h-10 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
-            </svg>
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg shadow-emerald-200 mb-4">
+            <Wrench className="w-10 h-10 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-white">AutoParts Stock</h1>
-          <p className="text-slate-400 mt-2">Première utilisation - Configuration</p>
+          <h1 className="text-3xl font-bold text-gray-900">AutoParts Stock</h1>
+          <p className="text-gray-500 mt-2">Première utilisation - Configuration</p>
         </div>
 
-        <Card className="border-slate-700 bg-slate-800/50 backdrop-blur">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl text-white flex items-center gap-2">
-              <CheckCircle className="h-6 w-6 text-green-500" />
+        <Card className="border-0 shadow-xl shadow-gray-200/50">
+          <CardHeader className="space-y-1 pb-4">
+            <CardTitle className="text-2xl text-gray-900 flex items-center gap-2">
+              <Settings className="w-6 h-6 text-emerald-500" />
               Configuration initiale
             </CardTitle>
-            <CardDescription className="text-slate-400">
+            <CardDescription className="text-gray-500">
               Créez votre compte administrateur pour commencer
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-5">
               {error && (
-                <Alert variant="destructive">
+                <Alert variant="destructive" className="bg-rose-50 border-rose-200">
                   <AlertCircle className="h-4 w-4" />
                   <AlertDescription>{error}</AlertDescription>
                 </Alert>
@@ -94,96 +92,99 @@ export default function SetupPage({ onComplete }: SetupPageProps) {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="username" className="text-slate-200">Nom d&apos;utilisateur *</Label>
+                  <Label htmlFor="username" className="text-gray-700">Nom d&apos;utilisateur *</Label>
                   <div className="relative">
-                    <User className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <Input
                       id="username"
                       type="text"
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
-                      className="pl-10 bg-slate-700/50 border-slate-600 text-white"
+                      className="pl-10 bg-gray-50 border-gray-200 focus:bg-white focus:border-emerald-400"
                       required
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="name" className="text-slate-200">Nom complet</Label>
+                  <Label htmlFor="name" className="text-gray-700">Nom complet</Label>
                   <div className="relative">
-                    <User className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <Input
                       id="name"
                       type="text"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="pl-10 bg-slate-700/50 border-slate-600 text-white"
+                      className="pl-10 bg-gray-50 border-gray-200 focus:bg-white focus:border-emerald-400"
                     />
                   </div>
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-slate-200">Email (optionnel)</Label>
+                <Label htmlFor="email" className="text-gray-700">Email (optionnel)</Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                   <Input
                     id="email"
                     type="email"
                     placeholder="admin@exemple.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="pl-10 bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-500"
+                    className="pl-10 bg-gray-50 border-gray-200 focus:bg-white focus:border-emerald-400"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="password" className="text-slate-200">Mot de passe *</Label>
+                  <Label htmlFor="password" className="text-gray-700">Mot de passe *</Label>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <Input
                       id="password"
                       type="password"
                       placeholder="••••••"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="pl-10 bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-500"
+                      className="pl-10 bg-gray-50 border-gray-200 focus:bg-white focus:border-emerald-400"
                       required
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="confirmPassword" className="text-slate-200">Confirmer *</Label>
+                  <Label htmlFor="confirmPassword" className="text-gray-700">Confirmer *</Label>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <Input
                       id="confirmPassword"
                       type="password"
                       placeholder="••••••"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
-                      className="pl-10 bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-500"
+                      className="pl-10 bg-gray-50 border-gray-200 focus:bg-white focus:border-emerald-400"
                       required
                     />
                   </div>
                 </div>
               </div>
 
-              <div className="bg-slate-700/30 rounded-lg p-4 text-sm text-slate-400">
-                <p className="font-medium text-slate-300 mb-2">Cette configuration va :</p>
-                <ul className="space-y-1 list-disc list-inside">
-                  <li>Créer votre compte administrateur</li>
-                  <li>Initialiser les catégories de pièces par défaut</li>
-                  <li>Configurer les paramètres de base</li>
+              <div className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-xl p-4 text-sm border border-emerald-100">
+                <p className="font-medium text-gray-700 mb-2 flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4 text-emerald-500" />
+                  Cette configuration va :
+                </p>
+                <ul className="space-y-1 text-gray-600 ml-6">
+                  <li>• Créer votre compte administrateur</li>
+                  <li>• Initialiser les catégories de pièces par défaut</li>
+                  <li>• Configurer les paramètres de base</li>
                 </ul>
               </div>
 
               <Button
                 type="submit"
-                className="w-full bg-primary hover:bg-primary/90"
+                className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-md shadow-emerald-200"
                 disabled={isLoading}
               >
                 {isLoading ? (

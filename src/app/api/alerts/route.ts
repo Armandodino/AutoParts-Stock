@@ -20,8 +20,24 @@ export async function GET(request: NextRequest) {
 
     const alerts = await db.alert.findMany({
       where,
-      include: {
-        part: true
+      select: {
+        id: true,
+        type: true,
+        title: true,
+        message: true,
+        partId: true,
+        isRead: true,
+        isResolved: true,
+        createdAt: true,
+        resolvedAt: true,
+        part: {
+          select: {
+            id: true,
+            name: true,
+            reference: true,
+            quantity: true
+          }
+        }
       },
       orderBy: { createdAt: 'desc' },
       take: 50

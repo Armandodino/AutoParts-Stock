@@ -20,7 +20,6 @@ export default function Home() {
   const [currentPage, setCurrentPage] = useState('dashboard');
 
   useEffect(() => {
-    // Check if app is initialized
     fetch('/api/auth/setup')
       .then(res => res.json())
       .then(data => {
@@ -34,26 +33,31 @@ export default function Home() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-50 via-white to-teal-50">
         <div className="flex flex-col items-center gap-4">
-          <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-          <p className="text-muted-foreground">Chargement...</p>
+          <div className="relative">
+            <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg">
+              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            </div>
+            <div className="absolute inset-0 h-16 w-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 animate-ping opacity-20" />
+          </div>
+          <p className="text-muted-foreground font-medium">Chargement...</p>
         </div>
       </div>
     );
   }
 
-  // Show setup page if not initialized
   if (!isSetup) {
     return <SetupPage onComplete={() => setIsSetup(true)} />;
   }
 
-  // Show login if not authenticated
   if (!isAuthenticated || !user) {
     return <LoginPage />;
   }
 
-  // Main application
   const renderPage = () => {
     switch (currentPage) {
       case 'dashboard':
@@ -72,15 +76,15 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen flex bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-emerald-50/30 flex">
       <Sidebar currentPage={currentPage} onPageChange={setCurrentPage} />
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col min-h-screen">
         <Header />
-        <main className="flex-1 p-6 overflow-auto">
+        <main className="flex-1 p-6 lg:p-8 overflow-auto">
           {renderPage()}
         </main>
       </div>
-      <Toaster position="top-right" />
+      <Toaster position="top-right" richColors />
     </div>
   );
 }

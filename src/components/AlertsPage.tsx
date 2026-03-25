@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { 
@@ -10,10 +10,11 @@ import {
   Bell, 
   CheckCircle, 
   Package,
-  RefreshCw
+  RefreshCw,
+  Sparkles
 } from 'lucide-react';
 
-interface Alert {
+interface AlertItem {
   id: string;
   type: 'low_stock' | 'out_of_stock' | 'sync_error' | 'backup_failed' | 'system';
   title: string;
@@ -30,7 +31,7 @@ interface Alert {
 }
 
 export default function AlertsPage() {
-  const [alerts, setAlerts] = useState<Alert[]>([]);
+  const [alerts, setAlerts] = useState<AlertItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'unread' | 'resolved'>('all');
 
@@ -101,13 +102,13 @@ export default function AlertsPage() {
   const getTypeInfo = (type: string) => {
     switch (type) {
       case 'out_of_stock':
-        return { label: 'Rupture', color: 'bg-red-500', icon: Package };
+        return { label: 'Rupture', bgColor: 'bg-rose-100', textColor: 'text-rose-700', icon: Package };
       case 'low_stock':
-        return { label: 'Stock faible', color: 'bg-yellow-500', icon: AlertTriangle };
+        return { label: 'Stock faible', bgColor: 'bg-amber-100', textColor: 'text-amber-700', icon: AlertTriangle };
       case 'sync_error':
-        return { label: 'Erreur sync', color: 'bg-orange-500', icon: RefreshCw };
+        return { label: 'Erreur sync', bgColor: 'bg-orange-100', textColor: 'text-orange-700', icon: RefreshCw };
       default:
-        return { label: 'Système', color: 'bg-blue-500', icon: Bell };
+        return { label: 'Système', bgColor: 'bg-sky-100', textColor: 'text-sky-700', icon: Bell };
     }
   };
 
@@ -125,18 +126,18 @@ export default function AlertsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-white">Alertes</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-3xl font-bold text-gray-900">Alertes</h1>
+          <p className="text-gray-500 mt-1">
             {unreadCount} non lue(s) • {resolvedCount} résolue(s)
           </p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={fetchAlerts}>
-            <RefreshCw className="w-4 h-4 mr-2" />
+          <Button variant="outline" onClick={fetchAlerts} className="gap-2">
+            <RefreshCw className="w-4 h-4" />
             Actualiser
           </Button>
-          <Button onClick={handleMarkAllRead}>
-            <CheckCircle className="w-4 h-4 mr-2" />
+          <Button onClick={handleMarkAllRead} className="gap-2 bg-emerald-500 hover:bg-emerald-600">
+            <CheckCircle className="w-4 h-4" />
             Tout marquer lu
           </Button>
         </div>
@@ -147,18 +148,21 @@ export default function AlertsPage() {
         <Button
           variant={filter === 'all' ? 'default' : 'outline'}
           onClick={() => setFilter('all')}
+          className={filter === 'all' ? 'bg-emerald-500 hover:bg-emerald-600' : ''}
         >
           Toutes ({alerts.length})
         </Button>
         <Button
           variant={filter === 'unread' ? 'default' : 'outline'}
           onClick={() => setFilter('unread')}
+          className={filter === 'unread' ? 'bg-emerald-500 hover:bg-emerald-600' : ''}
         >
           Non lues ({unreadCount})
         </Button>
         <Button
           variant={filter === 'resolved' ? 'default' : 'outline'}
           onClick={() => setFilter('resolved')}
+          className={filter === 'resolved' ? 'bg-emerald-500 hover:bg-emerald-600' : ''}
         >
           Résolues ({resolvedCount})
         </Button>
@@ -168,13 +172,17 @@ export default function AlertsPage() {
       <div className="space-y-4">
         {isLoading ? (
           <div className="text-center py-12">
-            <RefreshCw className="w-8 h-8 mx-auto animate-pulse text-muted-foreground" />
+            <RefreshCw className="w-10 h-10 mx-auto animate-pulse text-gray-300" />
+            <p className="mt-2 text-gray-400">Chargement...</p>
           </div>
         ) : filteredAlerts.length === 0 ? (
-          <Card className="bg-slate-800/50 border-slate-700">
+          <Card className="border-0 shadow-lg shadow-gray-100/50">
             <CardContent className="py-12 text-center">
-              <Bell className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-              <p className="text-muted-foreground">Aucune alerte</p>
+              <div className="w-16 h-16 mx-auto rounded-2xl bg-gray-100 flex items-center justify-center mb-4">
+                <Bell className="w-8 h-8 text-gray-300" />
+              </div>
+              <p className="text-gray-500 font-medium">Aucune alerte</p>
+              <p className="text-gray-400 text-sm mt-1">Les alertes apparaîtront ici</p>
             </CardContent>
           </Card>
         ) : (
@@ -184,38 +192,41 @@ export default function AlertsPage() {
             return (
               <Card 
                 key={alert.id} 
-                className={`bg-slate-800/50 border-slate-700 ${
-                  !alert.isRead ? 'border-l-4 border-l-primary' : ''
+                className={`border-0 shadow-lg shadow-gray-100/50 ${
+                  !alert.isRead ? 'border-l-4 border-l-emerald-500' : ''
                 }`}
               >
-                <CardContent className="p-4">
+                <CardContent className="p-5">
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex items-start gap-4">
-                      <div className={`w-10 h-10 rounded-lg ${typeInfo.color}/20 flex items-center justify-center`}>
-                        <typeInfo.icon className={`w-5 h-5 ${typeInfo.color.replace('bg-', 'text-')}`} />
+                      <div className={`w-11 h-11 rounded-xl ${typeInfo.bgColor} flex items-center justify-center flex-shrink-0`}>
+                        <typeInfo.icon className={`w-5 h-5 ${typeInfo.textColor}`} />
                       </div>
                       <div>
                         <div className="flex items-center gap-2 mb-1">
-                          <Badge className={typeInfo.color}>{typeInfo.label}</Badge>
+                          <Badge className={`${typeInfo.bgColor} ${typeInfo.textColor} border-0 font-medium`}>
+                            {typeInfo.label}
+                          </Badge>
                           {alert.isResolved && (
-                            <Badge variant="outline" className="text-green-500 border-green-500/20">
+                            <Badge className="bg-emerald-100 text-emerald-700 border-0">
+                              <CheckCircle className="w-3 h-3 mr-1" />
                               Résolue
                             </Badge>
                           )}
                         </div>
-                        <p className="font-medium text-white">{alert.title}</p>
-                        <p className="text-sm text-muted-foreground mt-1">{alert.message}</p>
+                        <p className="font-medium text-gray-900">{alert.title}</p>
+                        <p className="text-sm text-gray-500 mt-1">{alert.message}</p>
                         {alert.part && (
-                          <div className="mt-2 p-2 rounded bg-slate-700/30 text-sm">
-                            <p className="text-slate-300">
-                              <strong>{alert.part.name}</strong> ({alert.part.reference})
+                          <div className="mt-3 p-3 rounded-xl bg-gray-50 text-sm">
+                            <p className="text-gray-700 font-medium">
+                              {alert.part.name} <span className="font-normal text-gray-400">({alert.part.reference})</span>
                             </p>
-                            <p className="text-muted-foreground">
-                              Stock actuel: {alert.part.quantity}
+                            <p className="text-gray-500 mt-1">
+                              Stock actuel: <span className="font-medium text-gray-700">{alert.part.quantity}</span>
                             </p>
                           </div>
                         )}
-                        <p className="text-xs text-muted-foreground mt-2">
+                        <p className="text-xs text-gray-400 mt-3">
                           {formatDate(alert.createdAt)}
                         </p>
                       </div>
@@ -225,6 +236,7 @@ export default function AlertsPage() {
                         variant="outline"
                         size="sm"
                         onClick={() => handleResolve([alert.id])}
+                        className="flex-shrink-0"
                       >
                         Résoudre
                       </Button>
