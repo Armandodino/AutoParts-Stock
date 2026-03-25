@@ -35,18 +35,12 @@
       ".next/standalone/**/*",
       ".next/static/**/*",
       "public/**/*",
-      "db/**/*",
       "prisma/**/*",
       "node_modules/**/*",
-      "package.json"
+      "package.json",
+      "db/**/*"
     ],
-    "extraResources": [
-      {
-        "from": "db",
-        "to": "db",
-        "filter": ["**/*.db"]
-      }
-    ],
+    "extraResources": [],
     "win": {
       "target": [
         {
@@ -58,7 +52,8 @@
           "arch": ["x64"]
         }
       ],
-      "icon": "electron/assets/icon.ico"
+      "icon": "electron/assets/icon.ico",
+      "sign": null
     },
     "nsis": {
       "oneClick": false,
