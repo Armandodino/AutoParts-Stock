@@ -26,6 +26,7 @@
     "productName": "AutoParts Stock",
     "copyright": "Copyright © 2025 AutoParts Stock",
     "npmRebuild": false,
+    "asar": false,
     "directories": {
       "output": "dist",
       "buildResources": "electron/assets"
@@ -36,30 +37,53 @@
       ".next/static/**/*",
       "public/**/*",
       "prisma/**/*",
-      "node_modules/**/*",
       "package.json",
       "db/**/*"
     ],
-    "extraResources": [],
+    "extraResources": [
+      {
+        "from": ".next/standalone",
+        "to": "app/.next/standalone",
+        "filter": ["**/*"]
+      },
+      {
+        "from": ".next/static",
+        "to": "app/.next/static",
+        "filter": ["**/*"]
+      },
+      {
+        "from": "public",
+        "to": "app/public",
+        "filter": ["**/*"]
+      },
+      {
+        "from": "prisma",
+        "to": "app/prisma",
+        "filter": ["**/*"]
+      },
+      {
+        "from": "db",
+        "to": "app/db",
+        "filter": ["**/*"]
+      },
+      {
+        "from": "package.json",
+        "to": "app/package.json"
+      },
+      {
+        "from": "electron",
+        "to": "app/electron",
+        "filter": ["**/*"]
+      }
+    ],
     "win": {
       "target": [
-        {
-          "target": "nsis",
-          "arch": ["x64"]
-        },
         {
           "target": "portable",
           "arch": ["x64"]
         }
       ],
       "signAndEditExecutable": false
-    },
-    "nsis": {
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true,
-      "createDesktopShortcut": true,
-      "createStartMenuShortcut": true,
-      "shortcutName": "AutoParts Stock"
     },
     "mac": {
       "target": "dmg"
