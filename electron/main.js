@@ -14,34 +14,65 @@ let mainWindow;
 let loadingWindow;
 let serverProcess;
 
-// Determine paths
-function getAppPath() {
-  // For packaged app, resources are in different locations
-  if (app.isPackaged) {
-    // Check if we're running from a portable exe
-    const exeDir = path.dirname(app.getPath('exe'));
-    return exeDir;
-  }
-  return path.join(__dirname, '..');
+// Find the server.js file recursively
+function findServerJs(dir, maxDepth = 10) {
+  if (maxDepth <= 0) return null;
+  
+  try {
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+    
+    // Check for server.js in current directory
+    if (entries.some(e => e.name === 'server.js' && e.isFile())) {
+      return path.join(dir, 'server.js');
+    }
+    
+    // Search in subdirectories
+    for (const entry of entries) {
+      if (entry.isDirectory() && entry.name !== 'node_modules') {
+        const found = findServerJs(path.join(dir, entry.name), maxDepth - 1);
+        if (found) return found;
+      }
+    }
+  } catch (e) {}
+  
+  return null;
 }
 
+// Get server path
 function getServerPath() {
-  const appPath = getAppPath();
-  console.log('App path:', appPath);
+  console.log('=== Finding server.js ===');
+  console.log('resourcesPath:', process.resourcesPath);
+  console.log('exe path:', app.getPath('exe'));
+  console.log('isPackaged:', app.isPackaged);
   
-  // Try multiple possible locations for the server
-  const possiblePaths = [
-    path.join(appPath, 'resources', 'app', '.next', 'standalone', 'server.js'),
-    path.join(appPath, 'resources', 'app.asar', '.next', 'standalone', 'server.js'),
-    path.join(process.resourcesPath, 'app', '.next', 'standalone', 'server.js'),
-    path.join(process.resourcesPath, 'app.asar', '.next', 'standalone', 'server.js'),
-    path.join(__dirname, '..', '.next', 'standalone', 'server.js'),
+  const possibleBasePaths = [
+    process.resourcesPath,
+    path.dirname(app.getPath('exe')),
+    path.join(__dirname, '..'),
+    path.join(__dirname, '..', '..', '..'),
   ];
   
-  for (const p of possiblePaths) {
-    console.log('Checking:', p, '-> exists:', fs.existsSync(p));
-    if (fs.existsSync(p)) {
-      return p;
+  for (const basePath of possibleBasePaths) {
+    console.log('Searching in:', basePath);
+    
+    // Check direct paths
+    const directPaths = [
+      path.join(basePath, 'server.js'),
+      path.join(basePath, '.next', 'standalone', 'server.js'),
+      path.join(basePath, 'app', 'server.js'),
+      path.join(basePath, 'app', '.next', 'standalone', 'server.js'),
+    ];
+    
+    for (const p of directPaths) {
+      console.log('  Checking:', p, '->', fs.existsSync(p));
+      if (fs.existsSync(p)) return p;
+    }
+    
+    // Search recursively
+    const found = findServerJs(basePath);
+    if (found) {
+      console.log('  Found recursively:', found);
+      return found;
     }
   }
   
@@ -80,35 +111,18 @@ function createLoadingWindow() {
           justify-content: center;
           height: 100vh;
           border-radius: 10px;
-          overflow: hidden;
         }
-        .logo {
-          font-size: 32px;
-          font-weight: bold;
-          margin-bottom: 20px;
-          text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-        .logo span {
-          color: #f59e0b;
-        }
+        .logo { font-size: 32px; font-weight: bold; margin-bottom: 20px; }
+        .logo span { color: #f59e0b; }
         .spinner {
-          width: 50px;
-          height: 50px;
+          width: 50px; height: 50px;
           border: 4px solid rgba(255,255,255,0.3);
           border-top-color: #f59e0b;
           border-radius: 50%;
           animation: spin 1s linear infinite;
         }
-        @keyframes spin {
-          to { transform: rotate(360deg); }
-        }
-        .status {
-          margin-top: 20px;
-          font-size: 14px;
-          opacity: 0.8;
-          text-align: center;
-          padding: 0 20px;
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .status { margin-top: 20px; font-size: 14px; opacity: 0.8; text-align: center; padding: 0 20px; }
       </style>
     </head>
     <body>
@@ -119,14 +133,10 @@ function createLoadingWindow() {
     </html>
   `);
 
-  loadingWindow.on('closed', () => {
-    loadingWindow = null;
-  });
-
+  loadingWindow.on('closed', () => { loadingWindow = null; });
   return loadingWindow;
 }
 
-// Update loading status
 function updateLoadingStatus(status) {
   if (loadingWindow) {
     loadingWindow.webContents.executeJavaScript(
@@ -147,15 +157,13 @@ function createMainWindow() {
       nodeIntegration: false,
       contextIsolation: true,
     },
-    title: 'AutoParts Stock - Gestion de Stock',
+    title: 'AutoParts Stock',
   });
 
   mainWindow.loadURL('http://localhost:3000');
 
   mainWindow.once('ready-to-show', () => {
-    if (loadingWindow) {
-      loadingWindow.close();
-    }
+    if (loadingWindow) loadingWindow.close();
     mainWindow.show();
   });
 
@@ -164,95 +172,55 @@ function createMainWindow() {
     updateLoadingStatus(`Erreur: ${errorDescription}`);
   });
 
-  mainWindow.on('closed', () => {
-    mainWindow = null;
-  });
+  mainWindow.on('closed', () => { mainWindow = null; });
 
-  // Create menu
-  const menuTemplate = [
-    {
-      label: 'Fichier',
-      submenu: [
-        { type: 'separator' },
-        { role: 'quit', label: 'Quitter' }
-      ]
-    },
-    {
-      label: 'Affichage',
-      submenu: [
-        { role: 'reload', label: 'Actualiser' },
-        { type: 'separator' },
-        { role: 'togglefullscreen', label: 'Plein écran' },
-        { type: 'separator' },
-        {
-          label: 'Outils de développement',
-          click: () => mainWindow?.webContents.openDevTools()
-        }
-      ]
-    },
-    {
-      label: 'Aide',
-      submenu: [
-        {
-          label: 'À propos',
-          click: () => {
-            dialog.showMessageBox(mainWindow, {
-              type: 'info',
-              title: 'À propos',
-              message: 'AutoParts Stock v1.0.0',
-              detail: 'Application de gestion de stock de pièces automobiles.'
-            });
-          }
-        }
-      ]
-    }
-  ];
-
-  Menu.setApplicationMenu(Menu.buildFromTemplate(menuTemplate));
+  Menu.setApplicationMenu(Menu.buildFromTemplate([
+    { label: 'Fichier', submenu: [{ role: 'quit', label: 'Quitter' }] },
+    { label: 'Affichage', submenu: [
+      { role: 'reload', label: 'Actualiser' },
+      { type: 'separator' },
+      { role: 'togglefullscreen', label: 'Plein écran' },
+      { type: 'separator' },
+      { label: 'Outils de développement', click: () => mainWindow?.webContents.openDevTools() }
+    ]},
+    { label: 'Aide', submenu: [
+      { label: 'À propos', click: () => {
+        dialog.showMessageBox(mainWindow, {
+          type: 'info',
+          title: 'À propos',
+          message: 'AutoParts Stock v1.0',
+          detail: 'Application de gestion de stock de pièces automobiles.'
+        });
+      }}
+    ]}
+  ]));
 }
 
-// Start Next.js server
+// Start server
 function startServer() {
   return new Promise((resolve, reject) => {
     const serverPath = getServerPath();
-    
-    console.log('=== Server Path Debug ===');
     console.log('Server path:', serverPath);
-    console.log('resourcesPath:', process.resourcesPath);
-    console.log('app.isPackaged:', app.isPackaged);
-    console.log('exe path:', app.getPath('exe'));
-    console.log('========================');
-
+    
     if (!serverPath) {
       reject(new Error('Server file not found. Please reinstall the application.'));
       return;
     }
 
     updateLoadingStatus('Démarrage du serveur...');
-
-    // Get the directory containing the server
-    const serverDir = path.dirname(serverPath);
     
-    const env = {
-      ...process.env,
-      PORT: '3000',
-      NODE_ENV: 'production',
-      DATABASE_URL: 'file:./db/custom.db'
-    };
-
-    console.log('Starting server from:', serverDir);
+    const serverDir = path.dirname(serverPath);
+    console.log('Server directory:', serverDir);
     
     serverProcess = spawn('node', [serverPath], {
       cwd: serverDir,
-      env: env,
+      env: { ...process.env, PORT: '3000', NODE_ENV: 'production' },
       stdio: ['ignore', 'pipe', 'pipe']
     });
 
     serverProcess.stdout.on('data', (data) => {
       console.log('Server:', data.toString());
-      if (data.toString().includes('Ready') || 
-          data.toString().includes('started') ||
-          data.toString().includes('listening')) {
+      if (data.toString().includes('Ready') || data.toString().includes('listening')) {
         resolve();
       }
     });
@@ -262,13 +230,12 @@ function startServer() {
     });
 
     serverProcess.on('error', (error) => {
-      console.error('Failed to start server:', error);
+      console.error('Failed to start:', error);
       reject(error);
     });
 
-    // Timeout fallback
     setTimeout(() => {
-      console.log('Server startup timeout, continuing...');
+      console.log('Timeout, assuming server is ready...');
       resolve();
     }, 8000);
   });
@@ -276,55 +243,37 @@ function startServer() {
 
 // App lifecycle
 app.whenReady().then(async () => {
-  console.log('=== AutoParts Stock Starting ===');
-  console.log('isPackaged:', app.isPackaged);
-
-  // Show loading window
+  console.log('=== AutoParts Stock v1.0 ===');
+  
   createLoadingWindow();
 
   try {
     if (app.isPackaged) {
       updateLoadingStatus('Initialisation...');
       await startServer();
-      updateLoadingStatus('Chargement de l\'application...');
+      updateLoadingStatus('Chargement...');
     }
-
-    // Wait for server
+    
     await new Promise(r => setTimeout(r, 2000));
-
-    // Create main window
     createMainWindow();
-
+    
   } catch (error) {
     console.error('Startup error:', error);
     updateLoadingStatus(`Erreur: ${error.message}`);
-    
-    dialog.showErrorBox(
-      'Erreur de démarrage',
-      `L'application n'a pas pu démarrer:\n${error.message}\n\nConsultez la console pour plus de détails.`
-    );
-    
+    dialog.showErrorBox('Erreur de démarrage', `L'application n'a pas pu démarrer:\n${error.message}`);
     setTimeout(() => app.quit(), 5000);
   }
 
   app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) {
-      createMainWindow();
-    }
+    if (BrowserWindow.getAllWindows().length === 0) createMainWindow();
   });
 });
 
 app.on('window-all-closed', () => {
-  if (serverProcess) {
-    serverProcess.kill();
-  }
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
+  if (serverProcess) serverProcess.kill();
+  if (process.platform !== 'darwin') app.quit();
 });
 
 app.on('before-quit', () => {
-  if (serverProcess) {
-    serverProcess.kill();
-  }
+  if (serverProcess) serverProcess.kill();
 });
