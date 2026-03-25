@@ -53,7 +53,7 @@
         }
       ],
       "icon": "electron/assets/icon.ico",
-      "sign": null
+      "signAndEditExecutable": false
     },
     "nsis": {
       "oneClick": false,
