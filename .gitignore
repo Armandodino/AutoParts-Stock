@@ -34,7 +34,9 @@ linux-unpacked/
 # Database files
 *.db
 *.db-journal
-db/
+db/*.db
+db/*.db-journal
+!db/.gitkeep
 
 # misc
 .DS_Store
