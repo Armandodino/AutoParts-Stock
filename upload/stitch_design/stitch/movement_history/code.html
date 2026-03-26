@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Movements History | Kinetic Ledger</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-secondary-fixed": "#061f1d",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-fixed": "#ffdbd0",
+                        "surface": "#f8f9fa",
+                        "primary-container": "#006b5f",
+                        "tertiary-container": "#8f4c36",
+                        "background": "#f8f9fa",
+                        "outline-variant": "#bec9c5",
+                        "on-tertiary-container": "#ffcebf",
+                        "on-primary-fixed-variant": "#005047",
+                        "on-surface": "#191c1d",
+                        "surface-container": "#edeeef",
+                        "secondary-container": "#cae5e0",
+                        "on-primary-container": "#95e8d9",
+                        "secondary": "#4a635f",
+                        "on-tertiary-fixed-variant": "#723521",
+                        "tertiary-fixed-dim": "#ffb59e",
+                        "primary-fixed": "#9ff2e2",
+                        "secondary-fixed": "#cde8e3",
+                        "on-secondary-fixed-variant": "#334b48",
+                        "surface-dim": "#d9dadb",
+                        "inverse-surface": "#2e3132",
+                        "surface-tint": "#006b5f",
+                        "error-container": "#ffdad6",
+                        "on-secondary": "#ffffff",
+                        "tertiary": "#723521",
+                        "error": "#ba1a1a",
+                        "on-error-container": "#93000a",
+                        "on-tertiary-fixed": "#390b00",
+                        "surface-variant": "#e1e3e4",
+                        "on-primary-fixed": "#00201c",
+                        "on-primary": "#ffffff",
+                        "surface-container-low": "#f3f4f5",
+                        "outline": "#6e7976",
+                        "secondary-fixed-dim": "#b1ccc7",
+                        "inverse-on-surface": "#f0f1f2",
+                        "inverse-primary": "#83d5c6",
+                        "on-background": "#191c1d",
+                        "on-surface-variant": "#3e4946",
+                        "surface-container-highest": "#e1e3e4",
+                        "on-secondary-container": "#4e6763",
+                        "primary-fixed-dim": "#83d5c6",
+                        "surface-container-high": "#e7e8e9",
+                        "primary": "#005147",
+                        "on-tertiary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "surface-bright": "#f8f9fa"
+                    },
+                    fontFamily: {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #f8f9fa;
+            color: #191c1d;
+        }
+    </style>
+</head>
+<body class="font-body selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- SideNavBar Shell -->
+<aside class="h-screen w-64 fixed left-0 top-0 bg-slate-100 dark:bg-slate-900 flex flex-col py-6 z-50">
+<div class="px-6 mb-10">
+<h1 class="text-xl font-bold font-manrope text-emerald-900 dark:text-emerald-400">Kinetic Ledger</h1>
+<p class="text-xs font-label uppercase tracking-widest text-slate-500 mt-1">Stock Management</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-emerald-800 dark:hover:text-emerald-300 transition-colors font-manrope text-sm font-semibold tracking-tight hover:bg-slate-200/30 dark:hover:bg-slate-800/30" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+                Dashboard
+            </a>
+<a class="flex items-center gap-3 px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-emerald-800 dark:hover:text-emerald-300 transition-colors font-manrope text-sm font-semibold tracking-tight hover:bg-slate-200/30 dark:hover:bg-slate-800/30" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+                Inventory
+            </a>
+<!-- Active State: Movements -->
+<a class="flex items-center gap-3 px-4 py-2 text-emerald-900 dark:text-emerald-50 font-bold border-l-4 border-emerald-700 dark:border-emerald-500 bg-slate-200/50 dark:bg-slate-800/50 translate-x-1 transition-transform duration-200 font-manrope text-sm tracking-tight" href="#">
+<span class="material-symbols-outlined">sync_alt</span>
+                Movements
+            </a>
+<a class="flex items-center gap-3 px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-emerald-800 dark:hover:text-emerald-300 transition-colors font-manrope text-sm font-semibold tracking-tight hover:bg-slate-200/30 dark:hover:bg-slate-800/30" href="#">
+<span class="material-symbols-outlined">warning</span>
+                Low Stock Alerts
+            </a>
+<a class="flex items-center gap-3 px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-emerald-800 dark:hover:text-emerald-300 transition-colors font-manrope text-sm font-semibold tracking-tight hover:bg-slate-200/30 dark:hover:bg-slate-800/30" href="#">
+<span class="material-symbols-outlined">analytics</span>
+                Reports
+            </a>
+<a class="flex items-center gap-3 px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-emerald-800 dark:hover:text-emerald-300 transition-colors font-manrope text-sm font-semibold tracking-tight hover:bg-slate-200/30 dark:hover:bg-slate-800/30" href="#">
+<span class="material-symbols-outlined">settings</span>
+                Settings
+            </a>
+</nav>
+<div class="px-6 pt-6 mt-auto border-t border-slate-200/10">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden bg-emerald-100">
+<img alt="User Profile Avatar" class="w-full h-full object-cover" data-alt="close-up portrait of a professional man in a business casual attire with soft office lighting background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDqoEQOmkxu4IMJN9QfK4OLcwIxy6-CFOzKzrW1H_ehPyhAUv8GSEcatTq7ELAOMunDR1gH-roG1UHUB7j4ZlDKnzhzgYkJCARxqjgGZDIep0VOYYNg8akztupjlkMXx-GsUIiS2yxWkp0qegm22w7OJjmqUnoUynvjrNsRkBsybB3mCZBE5zZL1ne2cspdQs8oi4DICvnHz9x7KtZEdOi95Su1KyigkCw8KsA5l69PZKb2XB-PER9-AYS-u-VAWxUDz_zF9MS427A"/>
+</div>
+<div>
+<p class="text-sm font-bold text-emerald-900 dark:text-emerald-50">Alex Rivera</p>
+<p class="text-xs text-slate-500">Inventory Manager</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Canvas -->
+<main class="ml-64 min-h-screen">
+<!-- TopNavBar Shell -->
+<header class="fixed top-0 right-0 w-[calc(100%-16rem)] z-40 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border-b border-slate-200/10 dark:border-slate-800/10 shadow-sm dark:shadow-none">
+<div class="flex justify-between items-center h-16 px-8">
+<div class="flex items-center gap-8">
+<span class="font-manrope font-extrabold text-lg text-emerald-900 dark:text-emerald-50">Inventory Control</span>
+<nav class="hidden lg:flex items-center gap-6 font-manrope text-base tracking-wide">
+<a class="text-slate-500 dark:text-slate-400 hover:text-emerald-700" href="#">Overview</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-emerald-700" href="#">Stock List</a>
+<a class="text-emerald-900 dark:text-emerald-400 border-b-2 border-emerald-700 pb-1" href="#">Analytics</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative group">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 material-symbols-outlined text-sm">search</span>
+<input class="bg-surface-container-high/50 border-none rounded-lg pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-emerald-500 transition-all w-64" placeholder="Search stock movement..." type="text"/>
+</div>
+<button class="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-all">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-all">
+<span class="material-symbols-outlined">sync</span>
+</button>
+<button class="bg-primary text-on-primary px-4 py-2 rounded-lg font-manrope font-bold text-sm shadow-lg shadow-primary/20 hover:scale-[1.02] transition-transform">
+                        Add Vehicle
+                    </button>
+</div>
+</div>
+</header>
+<!-- Content Area -->
+<div class="pt-24 px-8 pb-12">
+<!-- Header Section -->
+<div class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div>
+<p class="text-primary font-label text-sm uppercase tracking-[0.2em] font-semibold mb-2">Audit Trail</p>
+<h2 class="font-headline text-4xl font-extrabold text-on-surface tracking-tight">Movement History</h2>
+</div>
+<div class="flex flex-wrap items-center gap-3">
+<div class="flex items-center bg-surface-container-low rounded-xl px-4 py-2 gap-3 border-b-2 border-outline-variant/20 focus-within:border-primary transition-colors">
+<span class="material-symbols-outlined text-slate-400 text-lg">calendar_today</span>
+<input class="bg-transparent border-none p-0 text-sm font-medium focus:ring-0 text-on-surface-variant" type="text" value="Oct 01, 2023 - Oct 31, 2023"/>
+</div>
+<div class="flex items-center bg-surface-container-low rounded-xl px-4 py-2 gap-3 border-b-2 border-outline-variant/20">
+<span class="material-symbols-outlined text-slate-400 text-lg">filter_list</span>
+<select class="bg-transparent border-none p-0 text-sm font-medium focus:ring-0 text-on-surface-variant appearance-none pr-8">
+<option>All Movements</option>
+<option>Inbound (In)</option>
+<option>Outbound (Out)</option>
+</select>
+</div>
+<button class="flex items-center gap-2 bg-surface-container-highest text-on-surface-variant px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-lg">download</span>
+                        Export CSV
+                    </button>
+</div>
+</div>
+<!-- Bento Stats Grid -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+<div class="bg-surface-container-lowest rounded-xl p-6 shadow-sm">
+<p class="text-xs font-label uppercase tracking-wider text-slate-500 mb-1">Total Transactions</p>
+<h3 class="font-headline text-3xl font-extrabold text-on-surface">1,284</h3>
+<p class="text-xs text-emerald-600 font-bold mt-2 flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">trending_up</span> +12% from last month
+                    </p>
+</div>
+<div class="bg-surface-container-lowest rounded-xl p-6 shadow-sm">
+<p class="text-xs font-label uppercase tracking-wider text-slate-500 mb-1">Inbound Items</p>
+<h3 class="font-headline text-3xl font-extrabold text-on-surface">842</h3>
+<div class="w-full bg-surface-container mt-4 h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[65%] rounded-full"></div>
+</div>
+</div>
+<div class="bg-surface-container-lowest rounded-xl p-6 shadow-sm">
+<p class="text-xs font-label uppercase tracking-wider text-slate-500 mb-1">Outbound Items</p>
+<h3 class="font-headline text-3xl font-extrabold text-on-surface">442</h3>
+<div class="w-full bg-surface-container mt-4 h-1.5 rounded-full overflow-hidden">
+<div class="bg-tertiary h-full w-[35%] rounded-full"></div>
+</div>
+</div>
+<div class="bg-primary-container text-on-primary-container rounded-xl p-6 shadow-lg shadow-primary-container/20 flex flex-col justify-between">
+<div>
+<p class="text-xs font-label uppercase tracking-wider opacity-80 mb-1">Operational Health</p>
+<h3 class="font-headline text-3xl font-extrabold">Optimal</h3>
+</div>
+<span class="material-symbols-outlined text-4xl opacity-30 self-end" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+</div>
+<!-- Modern Data Table -->
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low">
+<th class="px-8 py-4 text-xs font-label uppercase tracking-widest text-on-surface-variant font-bold">Date</th>
+<th class="px-8 py-4 text-xs font-label uppercase tracking-widest text-on-surface-variant font-bold">Piece Name</th>
+<th class="px-8 py-4 text-xs font-label uppercase tracking-widest text-on-surface-variant font-bold">Type</th>
+<th class="px-8 py-4 text-xs font-label uppercase tracking-widest text-on-surface-variant font-bold text-right">Quantity</th>
+<th class="px-8 py-4 text-xs font-label uppercase tracking-widest text-on-surface-variant font-bold">User</th>
+<th class="px-8 py-4 text-xs font-label uppercase tracking-widest text-on-surface-variant font-bold text-center">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/10">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-low/30 transition-colors group">
+<td class="px-8 py-5 text-sm font-medium text-on-surface">Oct 24, 2023 · 14:32</td>
+<td class="px-8 py-5">
+<div class="flex flex-col">
+<span class="text-sm font-bold text-on-surface">Precision Brake Pad Set</span>
+<span class="text-xs text-slate-500 font-label">SKU: BP-9902-LX</span>
+</div>
+</td>
+<td class="px-8 py-5">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-primary-fixed text-on-primary-fixed-variant">
+<span class="material-symbols-outlined text-sm">arrow_downward</span>
+                                        In
+                                    </span>
+</td>
+<td class="px-8 py-5 text-sm font-bold text-on-surface text-right">240 Units</td>
+<td class="px-8 py-5">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-slate-200">
+<img alt="User Profile" class="w-full h-full rounded-full object-cover" data-alt="professional portrait of a man with clean studio lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCkbYuRk4a9Wfqw6HXepy3sFrtiaJ1UPfAxXDqx-euG_TOJsDrnByKJgRrtxs2IbygdOsNz8GL4IQYX_4ToONnj-348Mq9HI91EqnyNEVN_P8jnmJw7n5Qr10g4Boqi5AuP2-LUZ-r_A3GZFvdPh_lSSrZcC2WWnqLNR8gdbxU5VMxzDhqhxUAwWpoFsWygaZ-aFxjpVIWDSro9UiNjllahCw4R6VDTJiMn8HZ99HvX0vpl-_7UxEHwg3byhELxskxHCNCPCRuFS94"/>
+</div>
+<span class="text-sm text-on-surface-variant">M. Thompson</span>
+</div>
+</td>
+<td class="px-8 py-5 text-center">
+<button class="opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 hover:text-primary">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-low/30 transition-colors group">
+<td class="px-8 py-5 text-sm font-medium text-on-surface">Oct 24, 2023 · 11:15</td>
+<td class="px-8 py-5">
+<div class="flex flex-col">
+<span class="text-sm font-bold text-on-surface">V8 Engine Assembly Module</span>
+<span class="text-xs text-slate-500 font-label">SKU: ENG-V8-PRO</span>
+</div>
+</td>
+<td class="px-8 py-5">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-error-container text-on-error-container">
+<span class="material-symbols-outlined text-sm">arrow_upward</span>
+                                        Out
+                                    </span>
+</td>
+<td class="px-8 py-5 text-sm font-bold text-on-surface text-right">12 Units</td>
+<td class="px-8 py-5">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-slate-200">
+<img alt="User Profile" class="w-full h-full rounded-full object-cover" data-alt="close-up portrait of a woman smiling in natural light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5uD7z6wJhkvLrqhCqoonHaak2nIlxQkY-hHMjQ9oHQhgrZdG1cO_Hm4-p4zz-QYf3gf-NHWiS_OGTOJ0Y0JVE6E2zeKlG8TZLVU0ly1q6Oyl19YDXExhluT_baOoh6jJHNzLlgAirSlLgc7qMuRJuzEXaLxs8v_2b0LTx0Cp3jO64UiH2dd89ZHuETTmItY-zlmNNgs691Ee99_EFURnXkUZkWix09RPaj28_7ATi5xB3R5yqajdPMQf_yXP_ZfM5mi7fsA3HPrI"/>
+</div>
+<span class="text-sm text-on-surface-variant">S. Jenkins</span>
+</div>
+</td>
+<td class="px-8 py-5 text-center">
+<button class="opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 hover:text-primary">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-low/30 transition-colors group">
+<td class="px-8 py-5 text-sm font-medium text-on-surface">Oct 23, 2023 · 16:45</td>
+<td class="px-8 py-5">
+<div class="flex flex-col">
+<span class="text-sm font-bold text-on-surface">High-Performance Fuel Pump</span>
+<span class="text-xs text-slate-500 font-label">SKU: FP-331-HY</span>
+</div>
+</td>
+<td class="px-8 py-5">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-primary-fixed text-on-primary-fixed-variant">
+<span class="material-symbols-outlined text-sm">arrow_downward</span>
+                                        In
+                                    </span>
+</td>
+<td class="px-8 py-5 text-sm font-bold text-on-surface text-right">45 Units</td>
+<td class="px-8 py-5">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-slate-200">
+<img alt="User Profile" class="w-full h-full rounded-full object-cover" data-alt="portrait of a man with a professional look against a neutral background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAssq-OICpvEy9RALj9G0slOWwefQq_eRGiF44QSvMbMVUUuaYUDQ_IRGrRjMOWmBkzBMDO8WQMZY4TeM4cK3i43uS8oEynqPVpCEuI6yAeSSjSv_L3zVnUNPRKiCjmuLlxBGkksegcui9dVwyYZc8tpIv4D2p6BdIhx9FwpBFQGtuw6hfTYSy1jwTbzehbKMkcxvSeKnTtKHm8sqRDgNaUPBqHquqokWjajzIItxD4xXztM6rGgQEXktTLEfKxVf5zpuULVaw89dI"/>
+</div>
+<span class="text-sm text-on-surface-variant">D. Wilson</span>
+</div>
+</td>
+<td class="px-8 py-5 text-center">
+<button class="opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 hover:text-primary">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container-low/30 transition-colors group">
+<td class="px-8 py-5 text-sm font-medium text-on-surface">Oct 23, 2023 · 09:02</td>
+<td class="px-8 py-5">
+<div class="flex flex-col">
+<span class="text-sm font-bold text-on-surface">Synthetic Motor Oil (5L)</span>
+<span class="text-xs text-slate-500 font-label">SKU: OIL-SYN-5L</span>
+</div>
+</td>
+<td class="px-8 py-5">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-error-container text-on-error-container">
+<span class="material-symbols-outlined text-sm">arrow_upward</span>
+                                        Out
+                                    </span>
+</td>
+<td class="px-8 py-5 text-sm font-bold text-on-surface text-right">500 Units</td>
+<td class="px-8 py-5">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-slate-200">
+<img alt="User Profile" class="w-full h-full rounded-full object-cover" data-alt="close-up portrait of a professional man in a business casual attire" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDDBlBKSIXOaLdqEj_QMR-ZuQd7iUGVjnmRGAknzlf3XbrICX5AKG3ln7nswmzqTq7Akm-IiL5NJ5q3mZBzu6nPvQPGnOco8tnjmgCindET08mOxDkYjolsB9URMlH1kVw2kTTtKj5TCFTm1Ihrc8Cw_OPS6fz4M1FG4VV7pxEkwnaJ8cD4mj-mWdhm8rZFra0rfm6GghO5QDokY0DKnAUzJBYsv5xjgv9KBYI-fCMYg4TdZBIbR3_47OijX-1hW5t4KKr_hWSISw4"/>
+</div>
+<span class="text-sm text-on-surface-variant">A. Rivera</span>
+</div>
+</td>
+<td class="px-8 py-5 text-center">
+<button class="opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 hover:text-primary">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</td>
+</tr>
+<!-- Row 5 -->
+<tr class="hover:bg-surface-container-low/30 transition-colors group">
+<td class="px-8 py-5 text-sm font-medium text-on-surface">Oct 22, 2023 · 15:58</td>
+<td class="px-8 py-5">
+<div class="flex flex-col">
+<span class="text-sm font-bold text-on-surface">Alloy Wheel Rim 19"</span>
+<span class="text-xs text-slate-500 font-label">SKU: RIM-19-AL</span>
+</div>
+</td>
+<td class="px-8 py-5">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-primary-fixed text-on-primary-fixed-variant">
+<span class="material-symbols-outlined text-sm">arrow_downward</span>
+                                        In
+                                    </span>
+</td>
+<td class="px-8 py-5 text-sm font-bold text-on-surface text-right">40 Units</td>
+<td class="px-8 py-5">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-slate-200">
+<img alt="User Profile" class="w-full h-full rounded-full object-cover" data-alt="professional portrait of a man with clean studio lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBtumEcb_CLZFQRkz_v1Ucxeqz1XkiC8w6R0gpaPYkTqcKThFPbyvo9NkxyrpGSRUHjeh_Cfmg9smn6faqi8ype3rX7tOh6ufhjMjSuBjBFMfplqY0m9Qm5dc5RrRVxr4YTqYGS0p8Dadekd_3iyhLma5TdpvsjBstamETlEUv_R8F8AQaaHB_8WEMCLYUXbboIetYLiQPabKP388bQWSQ7oh6TdeKERIg7cgDxfKRta8Miy7PjZadSE24y-3btOTix-qlvAjMRPn4"/>
+</div>
+<span class="text-sm text-on-surface-variant">M. Thompson</span>
+</div>
+</td>
+<td class="px-8 py-5 text-center">
+<button class="opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 hover:text-primary">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="px-8 py-4 bg-surface-container-low flex items-center justify-between border-t border-outline-variant/10">
+<p class="text-xs text-on-surface-variant font-medium">Showing 1 to 5 of 1,284 movements</p>
+<div class="flex items-center gap-2">
+<button class="w-8 h-8 flex items-center justify-center rounded-lg bg-surface-container text-on-surface-variant hover:bg-surface-container-highest transition-colors disabled:opacity-50" disabled="">
+<span class="material-symbols-outlined text-sm">chevron_left</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg bg-primary text-on-primary font-bold text-xs">1</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg bg-surface-container text-on-surface-variant hover:bg-surface-container-highest transition-colors font-bold text-xs">2</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg bg-surface-container text-on-surface-variant hover:bg-surface-container-highest transition-colors font-bold text-xs">3</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg bg-surface-container text-on-surface-variant hover:bg-surface-container-highest transition-colors">
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Contextual FAB - Restricted to Dashboard/Inventory mainly, but included for primary action here -->
+<button class="fixed bottom-8 right-8 w-14 h-14 bg-primary text-on-primary rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-50">
+<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">add</span>
+</button>
+</body></html>

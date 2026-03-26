@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Kinetic Ledger | Inventory Control</title>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts: Manrope & Inter -->
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-secondary-fixed": "#061f1d",
+              "surface-container-lowest": "#ffffff",
+              "tertiary-fixed": "#ffdbd0",
+              "surface": "#f8f9fa",
+              "primary-container": "#006b5f",
+              "tertiary-container": "#8f4c36",
+              "background": "#f8f9fa",
+              "outline-variant": "#bec9c5",
+              "on-tertiary-container": "#ffcebf",
+              "on-primary-fixed-variant": "#005047",
+              "on-surface": "#191c1d",
+              "surface-container": "#edeeef",
+              "secondary-container": "#cae5e0",
+              "on-primary-container": "#95e8d9",
+              "secondary": "#4a635f",
+              "on-tertiary-fixed-variant": "#723521",
+              "tertiary-fixed-dim": "#ffb59e",
+              "primary-fixed": "#9ff2e2",
+              "secondary-fixed": "#cde8e3",
+              "on-secondary-fixed-variant": "#334b48",
+              "surface-dim": "#d9dadb",
+              "inverse-surface": "#2e3132",
+              "surface-tint": "#006b5f",
+              "error-container": "#ffdad6",
+              "on-secondary": "#ffffff",
+              "tertiary": "#723521",
+              "error": "#ba1a1a",
+              "on-error-container": "#93000a",
+              "on-tertiary-fixed": "#390b00",
+              "surface-variant": "#e1e3e4",
+              "on-primary-fixed": "#00201c",
+              "on-primary": "#ffffff",
+              "surface-container-low": "#f3f4f5",
+              "outline": "#6e7976",
+              "secondary-fixed-dim": "#b1ccc7",
+              "inverse-on-surface": "#f0f1f2",
+              "inverse-primary": "#83d5c6",
+              "on-background": "#191c1d",
+              "on-surface-variant": "#3e4946",
+              "surface-container-highest": "#e1e3e4",
+              "on-secondary-container": "#4e6763",
+              "primary-fixed-dim": "#83d5c6",
+              "surface-container-high": "#e7e8e9",
+              "primary": "#005147",
+              "on-tertiary": "#ffffff",
+              "on-error": "#ffffff",
+              "surface-bright": "#f8f9fa"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        body {
+            background-color: #f8f9fa;
+            color: #191c1d;
+            font-family: 'Inter', sans-serif;
+        }
+        .editorial-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 2rem;
+        }
+    </style>
+</head>
+<body class="font-body selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- SideNavBar (JSON Derived) -->
+<aside class="h-screen w-64 fixed left-0 top-0 bg-slate-100 dark:bg-slate-900 border-none flex flex-col py-6 z-50">
+<div class="px-6 mb-10">
+<h1 class="text-xl font-bold font-manrope text-emerald-900 dark:text-emerald-400">Kinetic Ledger</h1>
+<p class="text-xs font-label uppercase tracking-widest text-slate-500 mt-1">Stock Management</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-emerald-800 dark:hover:text-emerald-300 transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">dashboard</span>
+<span class="font-manrope text-sm font-semibold tracking-tight">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-emerald-900 dark:text-emerald-50 font-bold border-l-4 border-emerald-700 dark:border-emerald-500 bg-slate-200/50 dark:bg-slate-800/50 translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">inventory_2</span>
+<span class="font-manrope text-sm font-semibold tracking-tight">Inventory</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-emerald-800 dark:hover:text-emerald-300 transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">sync_alt</span>
+<span class="font-manrope text-sm font-semibold tracking-tight">Movements</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-emerald-800 dark:hover:text-emerald-300 transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">warning</span>
+<span class="font-manrope text-sm font-semibold tracking-tight">Low Stock Alerts</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-emerald-800 dark:hover:text-emerald-300 transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">analytics</span>
+<span class="font-manrope text-sm font-semibold tracking-tight">Reports</span>
+</a>
+</nav>
+<div class="px-6 mt-auto">
+<a class="flex items-center gap-3 px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-emerald-800 dark:hover:text-emerald-300 transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">settings</span>
+<span class="font-manrope text-sm font-semibold tracking-tight">Settings</span>
+</a>
+<div class="mt-6 flex items-center gap-3 p-3 bg-surface-container-low rounded-xl">
+<img alt="User Profile Avatar" class="w-10 h-10 rounded-full border-2 border-white" data-alt="professional portrait of a warehouse manager in a clean office environment, soft daylight, high quality photography" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCWP5upD6tOhktxfCTpaDcCYQKfpwlcPWyWO6JFawDEgnHTkhs6otdQFiDeEc_tcplWhV6jJyEpaqxK0L-xdQ0kdOw0b4BFX7Fqy3EOeghB_YFKjCdj2UAwH8HZp5E0tSFsYR1HV_15liPq0ZdqG4GSjSIjhjTOhxrtEWnFI-_03p5m5tgDl_V6b-ISj1pKewror9U5gHp8wGGC5HTPMBhpPyp3xa_wIZilxGj3TKgly95QHzMv5Pma78iZ-PF-MKL8JKSG6uLDLFk"/>
+<div class="overflow-hidden">
+<p class="text-sm font-bold text-on-surface truncate">Alex Sterling</p>
+<p class="text-xs text-slate-500 truncate">Inventory Lead</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- TopNavBar (JSON Derived) -->
+<header class="fixed top-0 right-0 w-[calc(100%-16rem)] z-40 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border-b border-slate-200/10 dark:border-slate-800/10 shadow-sm dark:shadow-none">
+<div class="flex justify-between items-center h-16 px-8">
+<div class="flex items-center gap-8">
+<span class="font-manrope font-extrabold text-lg text-emerald-900 dark:text-emerald-50">Inventory Control</span>
+<nav class="hidden md:flex gap-6">
+<a class="font-manrope text-base tracking-wide text-slate-500 dark:text-slate-400 hover:text-emerald-700" href="#">Overview</a>
+<a class="font-manrope text-base tracking-wide text-emerald-900 dark:text-emerald-400 border-b-2 border-emerald-700 pb-1" href="#">Stock List</a>
+<a class="font-manrope text-base tracking-wide text-slate-500 dark:text-slate-400 hover:text-emerald-700" href="#">Analytics</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative group focus-within:ring-2 focus-within:ring-emerald-500 rounded-lg transition-all">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+<input class="pl-10 pr-4 py-2 bg-slate-100 border-none rounded-lg text-sm w-64 focus:ring-0" placeholder="Search reference..." type="text"/>
+</div>
+<button class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-all text-slate-500">
+<span class="material-symbols-outlined">sync</span>
+</button>
+<button class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-all text-slate-500 relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="bg-primary hover:bg-primary-container text-white px-4 py-2 rounded-lg font-manrope font-bold text-sm transition-all flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">add_circle</span>
+                    Add Piece
+                </button>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-64 pt-24 px-8 pb-12 min-h-screen bg-surface">
+<!-- Header Section -->
+<div class="mb-8 flex justify-between items-end">
+<div>
+<h2 class="font-headline text-3xl font-extrabold tracking-tight text-on-surface">Automotive Parts</h2>
+<p class="font-label text-sm text-on-surface-variant uppercase tracking-widest mt-1">Live Stock Ledger</p>
+</div>
+<div class="flex gap-4">
+<div class="bg-surface-container-lowest p-4 rounded-xl flex items-center gap-4 border border-outline-variant/10">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container">
+<span class="material-symbols-outlined">precision_manufacturing</span>
+</div>
+<div>
+<p class="text-xs font-label text-slate-500 uppercase tracking-tighter">Total SKU</p>
+<p class="font-headline text-xl font-bold">1,284</p>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-4 rounded-xl flex items-center gap-4 border border-outline-variant/10">
+<div class="w-10 h-10 rounded-full bg-tertiary-fixed flex items-center justify-center text-on-tertiary-fixed-variant">
+<span class="material-symbols-outlined">warning</span>
+</div>
+<div>
+<p class="text-xs font-label text-slate-500 uppercase tracking-tighter">Low Stock</p>
+<p class="font-headline text-xl font-bold text-tertiary">24</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Filter Bar -->
+<div class="bg-surface-container-low p-3 rounded-xl mb-6 flex items-center gap-4">
+<div class="flex items-center gap-2 bg-surface-container-lowest px-4 py-2 rounded-lg text-sm border border-outline-variant/20 cursor-pointer hover:bg-white transition-colors">
+<span class="material-symbols-outlined text-slate-500 text-lg">filter_alt</span>
+<span class="font-semibold">Category: All Parts</span>
+<span class="material-symbols-outlined text-slate-400">expand_more</span>
+</div>
+<div class="flex items-center gap-2 bg-surface-container-lowest px-4 py-2 rounded-lg text-sm border border-outline-variant/20 cursor-pointer hover:bg-white transition-colors">
+<span class="material-symbols-outlined text-slate-500 text-lg">sort_by_alpha</span>
+<span class="font-semibold">Sort: Name (A-Z)</span>
+<span class="material-symbols-outlined text-slate-400">expand_more</span>
+</div>
+<div class="ml-auto text-xs text-slate-400 font-label italic">
+                Last synced: Today, 10:42 AM
+            </div>
+</div>
+<!-- Data Table Container -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden border border-outline-variant/5">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low/50">
+<th class="px-6 py-4 font-label text-[10px] uppercase tracking-[0.15em] text-slate-500 font-bold">Part Details</th>
+<th class="px-6 py-4 font-label text-[10px] uppercase tracking-[0.15em] text-slate-500 font-bold">Reference</th>
+<th class="px-6 py-4 font-label text-[10px] uppercase tracking-[0.15em] text-slate-500 font-bold">Category</th>
+<th class="px-6 py-4 font-label text-[10px] uppercase tracking-[0.15em] text-slate-500 font-bold">Price</th>
+<th class="px-6 py-4 font-label text-[10px] uppercase tracking-[0.15em] text-slate-500 font-bold">Quantity</th>
+<th class="px-6 py-4 font-label text-[10px] uppercase tracking-[0.15em] text-slate-500 font-bold">Status</th>
+<th class="px-6 py-4 font-label text-[10px] uppercase tracking-[0.15em] text-slate-500 font-bold text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/10">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-low/30 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-slate-100 flex items-center justify-center">
+<span class="material-symbols-outlined text-slate-400">settings_input_component</span>
+</div>
+<div>
+<p class="font-bold text-on-surface">V8 Spark Plug Set</p>
+<p class="text-xs text-slate-400">Platinum series, pre-gapped</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 font-mono text-xs text-slate-600">IGN-SPK-9901</td>
+<td class="px-6 py-4">
+<span class="text-xs bg-secondary-container/30 text-on-secondary-container px-2 py-1 rounded">Ignition</span>
+</td>
+<td class="px-6 py-4 font-headline font-semibold">$124.50</td>
+<td class="px-6 py-4">
+<span class="font-headline font-bold">42</span>
+<span class="text-[10px] text-slate-400 ml-1">units</span>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1 bg-primary-fixed text-on-primary-fixed-variant px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+                                In Stock
+                            </span>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-2 text-slate-400 hover:text-primary transition-colors hover:bg-primary-fixed/30 rounded">
+<span class="material-symbols-outlined text-lg">edit_note</span>
+</button>
+<button class="p-2 text-slate-400 hover:text-error transition-colors hover:bg-error-container/30 rounded">
+<span class="material-symbols-outlined text-lg">delete_sweep</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-low/30 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-slate-100 flex items-center justify-center">
+<span class="material-symbols-outlined text-slate-400">filter_vintage</span>
+</div>
+<div>
+<p class="font-bold text-on-surface">Oil Filter Premium</p>
+<p class="text-xs text-slate-400">High-flow synthetic blend</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 font-mono text-xs text-slate-600">FLT-OIL-0043</td>
+<td class="px-6 py-4">
+<span class="text-xs bg-secondary-container/30 text-on-secondary-container px-2 py-1 rounded">Filtration</span>
+</td>
+<td class="px-6 py-4 font-headline font-semibold">$18.99</td>
+<td class="px-6 py-4">
+<span class="font-headline font-bold text-tertiary">08</span>
+<span class="text-[10px] text-slate-400 ml-1 text-tertiary">units</span>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1 bg-tertiary-fixed text-on-tertiary-fixed-variant px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+                                Low Stock
+                            </span>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-2 text-slate-400 hover:text-primary transition-colors hover:bg-primary-fixed/30 rounded">
+<span class="material-symbols-outlined text-lg">edit_note</span>
+</button>
+<button class="p-2 text-slate-400 hover:text-error transition-colors hover:bg-error-container/30 rounded">
+<span class="material-symbols-outlined text-lg">delete_sweep</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-low/30 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-slate-100 flex items-center justify-center">
+<span class="material-symbols-outlined text-slate-400">eject</span>
+</div>
+<div>
+<p class="font-bold text-on-surface">Brake Pad Front Set</p>
+<p class="text-xs text-slate-400">Ceramic composite, low dust</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 font-mono text-xs text-slate-600">BRK-PDF-2210</td>
+<td class="px-6 py-4">
+<span class="text-xs bg-secondary-container/30 text-on-secondary-container px-2 py-1 rounded">Braking System</span>
+</td>
+<td class="px-6 py-4 font-headline font-semibold">$89.00</td>
+<td class="px-6 py-4">
+<span class="font-headline font-bold text-error">00</span>
+<span class="text-[10px] text-slate-400 ml-1 text-error">units</span>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1 bg-error-container text-on-error-container px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span>
+                                Out of Stock
+                            </span>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-2 text-slate-400 hover:text-primary transition-colors hover:bg-primary-fixed/30 rounded">
+<span class="material-symbols-outlined text-lg">edit_note</span>
+</button>
+<button class="p-2 text-slate-400 hover:text-error transition-colors hover:bg-error-container/30 rounded">
+<span class="material-symbols-outlined text-lg">delete_sweep</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container-low/30 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-slate-100 flex items-center justify-center">
+<span class="material-symbols-outlined text-slate-400">bolt</span>
+</div>
+<div>
+<p class="font-bold text-on-surface">Alternator 12V 150A</p>
+<p class="text-xs text-slate-400">OE replacement for luxury sedans</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 font-mono text-xs text-slate-600">ELC-ALT-8812</td>
+<td class="px-6 py-4">
+<span class="text-xs bg-secondary-container/30 text-on-secondary-container px-2 py-1 rounded">Electrical</span>
+</td>
+<td class="px-6 py-4 font-headline font-semibold">$345.20</td>
+<td class="px-6 py-4">
+<span class="font-headline font-bold">15</span>
+<span class="text-[10px] text-slate-400 ml-1">units</span>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1 bg-primary-fixed text-on-primary-fixed-variant px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+                                In Stock
+                            </span>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-2 text-slate-400 hover:text-primary transition-colors hover:bg-primary-fixed/30 rounded">
+<span class="material-symbols-outlined text-lg">edit_note</span>
+</button>
+<button class="p-2 text-slate-400 hover:text-error transition-colors hover:bg-error-container/30 rounded">
+<span class="material-symbols-outlined text-lg">delete_sweep</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<!-- Pagination / Footer -->
+<div class="px-6 py-4 bg-surface-container-low/30 flex justify-between items-center">
+<p class="text-xs text-slate-500 font-label">Showing <span class="font-bold text-on-surface">1-4</span> of <span class="font-bold text-on-surface">1,284</span> entries</p>
+<div class="flex gap-1">
+<button class="w-8 h-8 rounded border border-outline-variant/20 flex items-center justify-center text-slate-400 hover:bg-white transition-all">
+<span class="material-symbols-outlined text-sm">chevron_left</span>
+</button>
+<button class="w-8 h-8 rounded border border-outline-variant/20 flex items-center justify-center bg-primary text-white font-bold text-xs">1</button>
+<button class="w-8 h-8 rounded border border-outline-variant/20 flex items-center justify-center text-slate-600 hover:bg-white font-bold text-xs transition-all">2</button>
+<button class="w-8 h-8 rounded border border-outline-variant/20 flex items-center justify-center text-slate-600 hover:bg-white font-bold text-xs transition-all">3</button>
+<button class="w-8 h-8 rounded border border-outline-variant/20 flex items-center justify-center text-slate-400 hover:bg-white transition-all">
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Secondary Info Cards (Editorial Layout) -->
+<div class="mt-8 editorial-grid">
+<div class="col-span-8 bg-surface-container-lowest rounded-xl p-6 border border-outline-variant/5">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-headline font-bold text-lg">Stock Turnover Health</h3>
+<button class="text-primary text-xs font-bold flex items-center gap-1">
+                        VIEW FULL REPORT <span class="material-symbols-outlined text-sm">trending_up</span>
+</button>
+</div>
+<div class="space-y-6">
+<div>
+<div class="flex justify-between mb-2">
+<span class="text-xs font-label text-slate-500">Fast Moving Goods</span>
+<span class="text-xs font-bold">84%</span>
+</div>
+<div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-gradient-to-r from-emerald-500 to-primary-container" style="width: 84%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between mb-2">
+<span class="text-xs font-label text-slate-500">Obsolete Inventory</span>
+<span class="text-xs font-bold">12%</span>
+</div>
+<div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-gradient-to-r from-tertiary to-tertiary-container" style="width: 12%"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="col-span-4 bg-primary text-white rounded-xl p-6 relative overflow-hidden">
+<div class="relative z-10">
+<span class="material-symbols-outlined text-4xl text-primary-fixed mb-4">offline_pin</span>
+<h3 class="font-headline font-bold text-xl mb-2">Offline Capability</h3>
+<p class="text-primary-fixed/80 text-sm mb-6">Your data is being saved locally. You can continue managing stock even without an active internet connection.</p>
+<div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-lg border border-white/20">
+<span class="w-2 h-2 rounded-full bg-primary-fixed animate-pulse"></span>
+<span class="text-xs font-bold tracking-wide">SYSTEM READY</span>
+</div>
+</div>
+<!-- Abstract visual element -->
+<div class="absolute -bottom-8 -right-8 w-40 h-40 bg-white/5 rounded-full border border-white/10 blur-2xl"></div>
+</div>
+</div>
+</main>
+</body></html>
