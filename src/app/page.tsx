@@ -31,21 +31,24 @@ export default function Home() {
       });
   }, []);
 
+  // Écran de chargement
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-100">
         <div className="flex flex-col items-center gap-6">
           <div className="relative">
-            <div className="h-20 w-20 rounded-2xl bg-emerald-800 flex items-center justify-center shadow-xl">
-              <span className="material-symbols-outlined text-white text-4xl" style={{ fontVariationSettings: "'FILL' 1" }}>
-                account_balance_wallet
+            <div className="h-16 w-16 rounded-2xl bg-emerald-800 flex items-center justify-center shadow-xl">
+              <span className="material-symbols-outlined text-white text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>
+                directions_car
               </span>
             </div>
-            <div className="absolute inset-0 h-20 w-20 rounded-2xl bg-emerald-800 animate-ping opacity-20" />
+            <div className="absolute inset-0 h-16 w-16 rounded-2xl bg-emerald-800 animate-ping opacity-20" />
           </div>
           <div className="flex flex-col items-center gap-2">
-            <p className="text-emerald-900 font-bold text-lg" style={{ fontFamily: 'Manrope, sans-serif' }}>Kinetic Ledger</p>
-            <p className="text-slate-500 text-sm">Loading system...</p>
+            <p className="text-emerald-900 font-bold text-lg" style={{ fontFamily: 'Manrope, sans-serif' }}>
+              AutoParts Stock
+p>
+            <p className="text-slate-500 text-sm">Chargement en cours...</p>
             <div className="flex gap-1 mt-2">
               <div className="w-2 h-2 rounded-full bg-emerald-800 animate-bounce" style={{ animationDelay: '0ms' }} />
               <div className="w-2 h-2 rounded-full bg-emerald-600 animate-bounce" style={{ animationDelay: '150ms' }} />
@@ -57,14 +60,17 @@ export default function Home() {
     );
   }
 
+  // Page d'installation initiale
   if (!isSetup) {
     return <SetupPage onComplete={() => setIsSetup(true)} />;
   }
 
+  // Page de connexion
   if (!isAuthenticated || !user) {
     return <LoginPage />;
   }
 
+  // Rendu de la page courante
   const renderPage = () => {
     switch (currentPage) {
       case 'dashboard':

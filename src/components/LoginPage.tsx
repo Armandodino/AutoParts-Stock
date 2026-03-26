@@ -32,143 +32,135 @@ export default function LoginPage() {
 
       if (data.success) {
         login(data.data);
-        toast.success('Login successful! Welcome back');
+        toast.success('Connexion réussie ! Bienvenue');
       } else {
-        setError(data.error || 'Login failed');
+        setError(data.error || 'Échec de la connexion');
       }
     } catch {
-      setError('Server connection error');
+      setError('Erreur de connexion au serveur');
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-surface relative overflow-hidden">
-      {/* Background Texture Elements */}
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 relative overflow-hidden">
+      {/* Background */}
       <div className="absolute inset-0 opacity-5" style={{
         backgroundImage: 'radial-gradient(#005147 0.5px, transparent 0.5px)',
         backgroundSize: '24px 24px'
       }} />
-      <div className="absolute -top-24 -left-24 w-96 h-96 bg-primary-fixed/20 blur-[120px] rounded-full" />
-      <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-secondary-fixed/30 blur-[120px] rounded-full" />
+      <div className="absolute -top-24 -left-24 w-96 h-96 bg-emerald-500/20 blur-[120px] rounded-full" />
+      <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-emerald-300/30 blur-[120px] rounded-full" />
 
       <div className="w-full max-w-[440px] px-6 relative z-10">
         {/* Login Card */}
-        <div className="bg-surface-container-lowest rounded-xl shadow-[0_12px_32px_-4px_rgba(25,28,29,0.08)] overflow-hidden">
-          {/* Header Section */}
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-slate-100">
+          {/* Header */}
           <div className="pt-12 pb-8 px-10 text-center">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-container/10 rounded-xl mb-6">
-              <span className="material-symbols-outlined text-primary text-4xl" style={{ fontVariationSettings: "'FILL' 1" }}>
-                account_balance_wallet
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-emerald-100 rounded-xl mb-6">
+              <span className="material-symbols-outlined text-emerald-700 text-4xl" style={{ fontVariationSettings: "'FILL' 1" }}>
+                directions_car
               </span>
             </div>
-            <h1 className="font-headline font-extrabold text-3xl text-primary tracking-tight mb-2">Kinetic Ledger</h1>
-            <p className="font-label text-sm text-on-surface-variant uppercase tracking-widest font-semibold">Admin Portal Access</p>
+            <h1 className="font-extrabold text-3xl text-emerald-900 tracking-tight mb-2" style={{ fontFamily: 'Manrope, sans-serif' }}>
+              AutoParts Stock
+            </h1>
+            <p className="text-sm text-slate-500 uppercase tracking-widest font-semibold">
+              Connexion Administrateur
+            </p>
           </div>
 
-          {/* Form Section */}
+          {/* Form */}
           <form onSubmit={handleSubmit} className="px-10 pb-12 space-y-6">
             {error && (
-              <Alert className="bg-error-container text-on-error-container border-0">
+              <Alert className="bg-red-50 text-red-700 border-0">
                 <span className="material-symbols-outlined text-lg">error</span>
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             )}
 
             <div className="space-y-4">
-              {/* Username Field */}
+              {/* Username */}
               <div className="group">
-                <Label htmlFor="username" className="block font-label text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2 ml-1">
-                  Username <span className="text-outline/50 font-normal normal-case">(Optional)</span>
+                <Label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 ml-1">
+                  Nom d&apos;utilisateur
                 </Label>
                 <div className="relative">
-                  <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline-variant group-focus-within:text-primary transition-colors">person</span>
+                  <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-emerald-600 transition-colors">
+                    person
+                  </span>
                   <Input
-                    id="username"
                     type="text"
-                    placeholder="e.g. admin_01"
+                    placeholder="Entrez votre identifiant"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    className="w-full pl-12 pr-4 py-3.5 bg-surface-container-high border-0 border-b-2 border-outline-variant/20 focus:border-primary focus:ring-0 rounded-lg font-body transition-all placeholder:text-outline-variant"
+                    className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border-0 border-b-2 border-slate-200 focus:border-emerald-600 focus:ring-0 rounded-lg transition-all"
+                    required
                   />
                 </div>
               </div>
 
-              {/* Password Field */}
+              {/* Password */}
               <div className="group">
-                <Label htmlFor="password" className="block font-label text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2 ml-1">
-                  Password
+                <Label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 ml-1">
+                  Mot de passe
                 </Label>
                 <div className="relative">
-                  <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline-variant group-focus-within:text-primary transition-colors">lock</span>
+                  <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-emerald-600 transition-colors">
+                    lock
+                  </span>
                   <Input
-                    id="password"
                     type="password"
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full pl-12 pr-4 py-3.5 bg-surface-container-high border-0 border-b-2 border-outline-variant/20 focus:border-primary focus:ring-0 rounded-lg font-body transition-all placeholder:text-outline-variant"
+                    className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border-0 border-b-2 border-slate-200 focus:border-emerald-600 focus:ring-0 rounded-lg transition-all"
                     required
                   />
                 </div>
               </div>
             </div>
 
-            {/* Action Button */}
+            {/* Submit Button */}
             <Button
               type="submit"
-              className="w-full py-4 rounded-lg text-on-primary font-headline font-bold text-lg shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+              className="w-full py-4 rounded-lg text-white font-bold text-lg shadow-lg shadow-emerald-900/20 hover:shadow-xl transition-all flex items-center justify-center gap-2"
               style={{ background: 'linear-gradient(135deg, #005147 0%, #006b5f 100%)' }}
               disabled={isLoading}
             >
               {isLoading ? (
                 <>
                   <span className="material-symbols-outlined animate-spin">progress_activity</span>
-                  Logging in...
+                  Connexion en cours...
                 </>
               ) : (
                 <>
-                  Login
+                  Se connecter
                   <span className="material-symbols-outlined text-xl">arrow_forward</span>
                 </>
               )}
             </Button>
-
-            {/* Auxiliary Links */}
-            <div className="flex justify-between items-center pt-2">
-              <a href="#" className="text-xs font-semibold text-primary hover:underline decoration-2 underline-offset-4">Forgot Password?</a>
-              <a href="#" className="text-xs font-semibold text-on-surface-variant hover:text-primary transition-colors">Request Access</a>
-            </div>
           </form>
         </div>
 
-        {/* Offline Status Footer */}
+        {/* Mode Hors-ligne */}
         <div className="mt-8 flex flex-col items-center gap-4">
-          <div className="flex items-center gap-3 px-5 py-2.5 bg-secondary-container/50 backdrop-blur-md rounded-full border border-secondary-fixed-dim/20 shadow-sm">
+          <div className="flex items-center gap-3 px-5 py-2.5 bg-emerald-50 backdrop-blur-md rounded-full border border-emerald-200 shadow-sm">
             <span className="flex h-2 w-2 relative">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-secondary" />
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-600" />
             </span>
-            <span className="font-label text-xs font-bold text-on-secondary-container tracking-wide uppercase">Offline Mode Active</span>
-            <div className="h-4 w-px bg-on-secondary-container/20" />
-            <span className="material-symbols-outlined text-sm text-on-secondary-container">cloud_off</span>
+            <span className="text-xs font-bold text-emerald-800 tracking-wide uppercase">
+              Mode Hors-ligne Actif
+            </span>
+            <span className="material-symbols-outlined text-sm text-emerald-700">cloud_off</span>
           </div>
-          <p className="text-[11px] text-outline text-center leading-relaxed max-w-[280px]">
-            This terminal is currently operating on local storage. All changes will sync once a secure connection is established.
+          <p className="text-xs text-slate-500 text-center leading-relaxed max-w-[300px]">
+            Cette application fonctionne en mode local. Toutes vos données sont sauvegardées sur cet appareil.
           </p>
         </div>
       </div>
-
-      {/* Version & System Info */}
-      <footer className="fixed bottom-6 left-0 w-full px-10 flex justify-between items-end pointer-events-none">
-        <div className="font-label text-[10px] text-outline-variant uppercase tracking-[0.2em] font-bold">
-          System ID: KL-DX-2024
-        </div>
-        <div className="font-label text-[10px] text-outline-variant uppercase tracking-[0.2em] font-bold">
-          v4.2.0-Stable
-        </div>
-      </footer>
     </div>
   );
 }

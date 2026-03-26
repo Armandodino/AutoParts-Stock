@@ -7,55 +7,60 @@ interface HeaderProps {
 export default function Header({ currentPage = 'dashboard' }: HeaderProps) {
   const getPageTitle = () => {
     switch (currentPage) {
-      case 'dashboard': return 'Inventory Control';
-      case 'parts': return 'Inventory Control';
-      case 'movements': return 'Inventory Control';
-      case 'alerts': return 'Inventory Control';
-      case 'settings': return 'System Settings';
-      default: return 'Inventory Control';
+      case 'dashboard': return 'Tableau de Bord';
+      case 'parts': return 'Inventaire des Pièces';
+      case 'movements': return 'Mouvements de Stock';
+      case 'alerts': return 'Alertes de Stock';
+      case 'settings': return 'Paramètres';
+      default: return 'AutoParts Stock';
+    }
+  };
+
+  const getPageDescription = () => {
+    switch (currentPage) {
+      case 'dashboard': return 'Vue d\'ensemble de votre stock';
+      case 'parts': return 'Gérez vos pièces automobiles';
+      case 'movements': return 'Historique des entrées et sorties';
+      case 'alerts': return 'Articles nécessitant une attention';
+      case 'settings': return 'Configuration de l\'application';
+      default: return '';
     }
   };
 
   return (
-    <header className="fixed top-0 right-0 w-[calc(100%-16rem)] z-40 bg-white/80 backdrop-blur-xl border-b border-slate-200/10 shadow-sm">
+    <header className="fixed top-0 right-0 w-[calc(100%-16rem)] z-40 bg-white/95 backdrop-blur-sm border-b border-slate-200">
       <div className="flex justify-between items-center h-16 px-8">
-        <div className="flex items-center gap-8">
-          <span className="text-lg font-extrabold text-emerald-900" style={{ fontFamily: 'Manrope, sans-serif' }}>{getPageTitle()}</span>
-          <nav className="hidden md:flex gap-6">
-            <a className="text-sm text-emerald-900 border-b-2 border-emerald-700 pb-1 font-medium tracking-wide" href="#">Overview</a>
-            <a className="text-sm text-slate-500 hover:text-emerald-700 font-medium tracking-wide" href="#">Stock List</a>
-            <a className="text-sm text-slate-500 hover:text-emerald-700 font-medium tracking-wide" href="#">Analytics</a>
-          </nav>
+        {/* Titre de la page */}
+        <div>
+          <h1 className="text-lg font-bold text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>
+            {getPageTitle()}
+          </h1>
+          <p className="text-xs text-slate-500">{getPageDescription()}</p>
         </div>
         
-        <div className="flex items-center gap-6">
-          {/* Search */}
+        {/* Actions */}
+        <div className="flex items-center gap-3">
+          {/* Recherche */}
           <div className="relative">
-            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">
+            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">
               search
             </span>
             <input 
-              className="pl-10 pr-4 py-1.5 bg-slate-100 border-none rounded-full text-sm w-64 focus:ring-2 focus:ring-emerald-500 transition-all"
-              placeholder="Search VIN or Stock ID..."
+              className="pl-10 pr-4 py-2 bg-slate-100 border-none rounded-lg text-sm w-56 focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all"
+              placeholder="Rechercher une pièce..."
               type="text"
             />
           </div>
           
-          {/* Notification Bell */}
-          <button className="p-2 text-slate-500 hover:bg-slate-100 rounded-lg transition-all relative">
+          {/* Notifications */}
+          <button className="relative p-2 text-slate-500 hover:bg-slate-100 rounded-lg transition-all">
             <span className="material-symbols-outlined">notifications</span>
-            <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full" />
+            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full" />
           </button>
           
-          {/* Sync */}
+          {/* Aide */}
           <button className="p-2 text-slate-500 hover:bg-slate-100 rounded-lg transition-all">
-            <span className="material-symbols-outlined">sync</span>
-          </button>
-          
-          {/* Add Button */}
-          <button className="bg-emerald-800 hover:bg-emerald-700 text-white px-5 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2" style={{ fontFamily: 'Manrope, sans-serif' }}>
-            <span className="material-symbols-outlined text-lg">add_circle</span>
-            Add Vehicle
+            <span className="material-symbols-outlined">help_outline</span>
           </button>
         </div>
       </div>
