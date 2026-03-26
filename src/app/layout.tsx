@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Kinetic Ledger - Automotive Stock Management",
-  description: "Premium automotive parts inventory management system with offline-first capability",
+  title: "AutoParts Stock - Gestion de Stock Automobile",
+  description: "Application de gestion de stock de pièces automobiles avec mode hors-ligne",
   icons: {
     icon: [
       { url: '/favicon.svg', type: 'image/svg+xml' },
@@ -17,22 +17,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="light">
-      <head>
-        {/* Google Fonts - Manrope & Inter */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link 
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" 
-          rel="stylesheet"
-        />
-        {/* Material Symbols */}
-        <link 
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,RANGE@24,400,0,0&display=swap" 
-          rel="stylesheet"
-        />
-      </head>
-      <body className="bg-surface font-body text-on-surface antialiased">
+    <html lang="fr" className="light">
+      <body className="bg-slate-50 font-sans text-slate-900 antialiased">
         {children}
       </body>
     </html>
