@@ -4,15 +4,6 @@ import { useEffect, useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent } from '@/components/ui/card';
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
-} from '@/components/ui/table';
 import {
   Dialog,
   DialogContent,
@@ -28,29 +19,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
-import { 
-  Plus, 
-  Search, 
-  MoreVertical, 
-  Edit, 
-  Trash2, 
-  Package,
-  ArrowUpRight,
-  ArrowDownRight,
-  Upload,
-  X,
-  Filter,
-  Download,
-  Inventory
-} from 'lucide-react';
 
 interface Part {
   id: string;
@@ -81,9 +51,6 @@ export default function PartsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all-categories');
-  const [showFilters, setShowFilters] = useState(false);
-  const [filterLowStock, setFilterLowStock] = useState(false);
-  const [filterOutOfStock, setFilterOutOfStock] = useState(false);
 
   // Dialog states
   const [showPartDialog, setShowPartDialog] = useState(false);
@@ -120,7 +87,7 @@ export default function PartsPage() {
   useEffect(() => {
     fetchParts();
     fetchCategories();
-  }, [search, selectedCategory, filterLowStock, filterOutOfStock]);
+  }, [search, selectedCategory]);
 
   const fetchParts = async () => {
     setIsLoading(true);
@@ -128,8 +95,6 @@ export default function PartsPage() {
       const params = new URLSearchParams();
       if (search) params.append('search', search);
       if (selectedCategory && selectedCategory !== 'all-categories') params.append('categoryId', selectedCategory);
-      if (filterLowStock) params.append('minStock', 'true');
-      if (filterOutOfStock) params.append('outOfStock', 'true');
 
       const response = await fetch(`/api/parts?${params.toString()}`);
       const data = await response.json();
@@ -138,7 +103,7 @@ export default function PartsPage() {
       }
     } catch (error) {
       console.error('Error fetching parts:', error);
-      toast.error('Erreur lors du chargement des pièces');
+      toast.error('Error loading parts');
     } finally {
       setIsLoading(false);
     }
@@ -194,7 +159,7 @@ export default function PartsPage() {
 
   const handleSavePart = async () => {
     if (!formData.categoryId) {
-      toast.error('Veuillez d\'abord créer une catégorie dans Paramètres');
+      toast.error('Please create a category first in Settings');
       return;
     }
 
@@ -210,31 +175,31 @@ export default function PartsPage() {
 
       const data = await response.json();
       if (data.success) {
-        toast.success(editingPart ? 'Pièce modifiée avec succès' : 'Pièce créée avec succès');
+        toast.success(editingPart ? 'Part updated successfully' : 'Part created successfully');
         setShowPartDialog(false);
         fetchParts();
       } else {
-        toast.error(data.error || 'Erreur lors de la sauvegarde');
+        toast.error(data.error || 'Error saving part');
       }
     } catch (error) {
-      toast.error('Erreur lors de la sauvegarde');
+      toast.error('Error saving part');
     }
   };
 
   const handleDeletePart = async (partId: string) => {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer cette pièce ?')) return;
+    if (!confirm('Are you sure you want to delete this part?')) return;
 
     try {
       const response = await fetch(`/api/parts/${partId}`, { method: 'DELETE' });
       const data = await response.json();
       if (data.success) {
-        toast.success('Pièce supprimée avec succès');
+        toast.success('Part deleted successfully');
         fetchParts();
       } else {
-        toast.error(data.error || 'Erreur lors de la suppression');
+        toast.error(data.error || 'Error deleting part');
       }
     } catch (error) {
-      toast.error('Erreur lors de la suppression');
+      toast.error('Error deleting part');
     }
   };
 
@@ -269,39 +234,14 @@ export default function PartsPage() {
 
       const data = await response.json();
       if (data.success) {
-        toast.success('Mouvement enregistré avec succès');
+        toast.success('Movement recorded successfully');
         setShowStockDialog(false);
         fetchParts();
       } else {
-        toast.error(data.error || 'Erreur lors de l\'enregistrement');
+        toast.error(data.error || 'Error recording movement');
       }
     } catch (error) {
-      toast.error('Erreur lors de l\'enregistrement');
-    }
-  };
-
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const formDataUpload = new FormData();
-    formDataUpload.append('file', file);
-
-    try {
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        body: formDataUpload
-      });
-
-      const data = await response.json();
-      if (data.success) {
-        setFormData(prev => ({ ...prev, imageUrl: data.data.url }));
-        toast.success('Image uploadée avec succès');
-      } else {
-        toast.error(data.error || 'Erreur lors de l\'upload');
-      }
-    } catch {
-      toast.error('Erreur lors de l\'upload');
+      toast.error('Error recording movement');
     }
   };
 
@@ -310,17 +250,31 @@ export default function PartsPage() {
   };
 
   const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('fr-FR', {
+    return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'XOF',
-      maximumFractionDigits: 0
+      currency: 'USD',
+      minimumFractionDigits: 2
     }).format(value);
   };
 
   const getStockStatus = (part: Part) => {
-    if (part.quantity <= 0) return { label: 'Rupture', className: 'bg-error-container text-on-error-container' };
-    if (part.quantity <= part.minStock) return { label: 'Stock faible', className: 'bg-tertiary-fixed text-on-tertiary-fixed-variant' };
-    return { label: 'En stock', className: 'bg-primary-fixed text-on-primary-fixed-variant' };
+    if (part.quantity <= 0) return { label: 'Out of Stock', className: 'bg-error-container text-on-error-container' };
+    if (part.quantity <= part.minStock) return { label: 'Low Stock', className: 'bg-tertiary-fixed text-on-tertiary-fixed-variant' };
+    return { label: 'In Stock', className: 'bg-primary-fixed text-on-primary-fixed-variant' };
+  };
+
+  const getCategoryIcon = (categoryName: string) => {
+    const icons: Record<string, string> = {
+      'Moteur': 'settings_input_component',
+      'Freins': 'eject',
+      'Suspension': 'bolt',
+      'Électrique': 'battery_charging_full',
+      'Filtration': 'filter_vintage',
+      'Transmission': 'sync',
+      'Carrosserie': 'directions_car',
+      'default': 'precision_manufacturing'
+    };
+    return icons[categoryName] || icons['default'];
   };
 
   return (
@@ -328,25 +282,25 @@ export default function PartsPage() {
       {/* Header Section */}
       <div className="flex justify-between items-end">
         <div>
-          <h2 className="font-headline text-3xl font-extrabold tracking-tight text-on-surface">Pièces Automobiles</h2>
-          <p className="font-label text-sm text-on-surface-variant uppercase tracking-widest mt-1">Inventaire en direct</p>
+          <h2 className="font-headline text-3xl font-extrabold tracking-tight text-on-surface">Automotive Parts</h2>
+          <p className="font-label text-sm text-on-surface-variant uppercase tracking-widest mt-1">Live Stock Ledger</p>
         </div>
         <div className="flex gap-4">
           <div className="bg-surface-container-lowest p-4 rounded-xl flex items-center gap-4 border border-outline-variant/10">
             <div className="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container">
-              <Inventory className="w-5 h-5" />
+              <span className="material-symbols-outlined">precision_manufacturing</span>
             </div>
             <div>
-              <p className="text-xs font-label text-slate-500 uppercase tracking-tighter">Total</p>
-              <p className="font-headline text-xl font-bold">{parts.length}</p>
+              <p className="text-xs font-label text-slate-500 uppercase tracking-tighter">Total SKU</p>
+              <p className="font-headline text-xl font-bold">{parts.length.toLocaleString()}</p>
             </div>
           </div>
           <div className="bg-surface-container-lowest p-4 rounded-xl flex items-center gap-4 border border-outline-variant/10">
             <div className="w-10 h-10 rounded-full bg-tertiary-fixed flex items-center justify-center text-on-tertiary-fixed-variant">
-              <Filter className="w-5 h-5" />
+              <span className="material-symbols-outlined">warning</span>
             </div>
             <div>
-              <p className="text-xs font-label text-slate-500 uppercase tracking-tighter">Stock faible</p>
+              <p className="text-xs font-label text-slate-500 uppercase tracking-tighter">Low Stock</p>
               <p className="font-headline text-xl font-bold text-tertiary">{parts.filter(p => p.quantity > 0 && p.quantity <= p.minStock).length}</p>
             </div>
           </div>
@@ -356,37 +310,42 @@ export default function PartsPage() {
       {/* Filter Bar */}
       <div className="bg-surface-container-low p-3 rounded-xl flex items-center gap-4">
         <div className="flex items-center gap-2 bg-surface-container-lowest px-4 py-2 rounded-lg text-sm border border-outline-variant/20 cursor-pointer hover:bg-white transition-colors">
-          <Filter className="w-4 h-4 text-slate-500" />
+          <span className="material-symbols-outlined text-slate-500 text-lg">filter_alt</span>
           <select 
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
             className="bg-transparent border-none focus:ring-0 font-semibold cursor-pointer"
           >
-            <option value="all-categories">Catégorie: Toutes</option>
+            <option value="all-categories">Category: All Parts</option>
             {categories.map(cat => (
               <option key={cat.id} value={cat.id}>{cat.name}</option>
             ))}
           </select>
         </div>
+        <div className="flex items-center gap-2 bg-surface-container-lowest px-4 py-2 rounded-lg text-sm border border-outline-variant/20 cursor-pointer hover:bg-white transition-colors">
+          <span className="material-symbols-outlined text-slate-500 text-lg">sort_by_alpha</span>
+          <span className="font-semibold">Sort: Name (A-Z)</span>
+          <span className="material-symbols-outlined text-slate-400">expand_more</span>
+        </div>
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
           <Input
-            placeholder="Rechercher par nom, référence ou code-barres..."
+            placeholder="Search reference..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-10 bg-surface-container-lowest border-none h-10"
           />
         </div>
         <Button variant="outline" onClick={handleExport} className="gap-2">
-          <Download className="w-4 h-4" />
-          Exporter
+          <span className="material-symbols-outlined text-lg">download</span>
+          Export CSV
         </Button>
         <Button 
           onClick={() => handleOpenPartDialog()} 
           className="bg-primary text-on-primary hover:bg-primary-container gap-2"
         >
-          <Plus className="w-4 h-4" />
-          Nouvelle pièce
+          <span className="material-symbols-outlined text-sm">add_circle</span>
+          Add Piece
         </Button>
       </div>
 
@@ -395,12 +354,12 @@ export default function PartsPage() {
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-surface-container-low/50">
-              <th className="px-6 py-4 font-label text-[10px] uppercase tracking-[0.15em] text-slate-500 font-bold">Détails</th>
-              <th className="px-6 py-4 font-label text-[10px] uppercase tracking-[0.15em] text-slate-500 font-bold">Référence</th>
-              <th className="px-6 py-4 font-label text-[10px] uppercase tracking-[0.15em] text-slate-500 font-bold">Catégorie</th>
-              <th className="px-6 py-4 font-label text-[10px] uppercase tracking-[0.15em] text-slate-500 font-bold">Prix</th>
-              <th className="px-6 py-4 font-label text-[10px] uppercase tracking-[0.15em] text-slate-500 font-bold">Quantité</th>
-              <th className="px-6 py-4 font-label text-[10px] uppercase tracking-[0.15em] text-slate-500 font-bold">Statut</th>
+              <th className="px-6 py-4 font-label text-[10px] uppercase tracking-[0.15em] text-slate-500 font-bold">Part Details</th>
+              <th className="px-6 py-4 font-label text-[10px] uppercase tracking-[0.15em] text-slate-500 font-bold">Reference</th>
+              <th className="px-6 py-4 font-label text-[10px] uppercase tracking-[0.15em] text-slate-500 font-bold">Category</th>
+              <th className="px-6 py-4 font-label text-[10px] uppercase tracking-[0.15em] text-slate-500 font-bold">Price</th>
+              <th className="px-6 py-4 font-label text-[10px] uppercase tracking-[0.15em] text-slate-500 font-bold">Quantity</th>
+              <th className="px-6 py-4 font-label text-[10px] uppercase tracking-[0.15em] text-slate-500 font-bold">Status</th>
               <th className="px-6 py-4 font-label text-[10px] uppercase tracking-[0.15em] text-slate-500 font-bold text-right">Actions</th>
             </tr>
           </thead>
@@ -410,16 +369,16 @@ export default function PartsPage() {
                 <td colSpan={7} className="text-center py-12">
                   <div className="flex flex-col items-center gap-3">
                     <div className="w-8 h-8 rounded-full border-2 border-primary-fixed border-t-primary animate-spin" />
-                    <p className="text-on-surface-variant">Chargement...</p>
+                    <p className="text-on-surface-variant">Loading...</p>
                   </div>
                 </td>
               </tr>
             ) : parts.length === 0 ? (
               <tr>
                 <td colSpan={7} className="text-center py-12">
-                  <Package className="w-12 h-12 mx-auto text-slate-300 mb-2" />
-                  <p className="text-on-surface font-medium">Aucune pièce trouvée</p>
-                  <p className="text-sm text-on-surface-variant">Commencez par ajouter votre première pièce</p>
+                  <span className="material-symbols-outlined text-5xl text-slate-300 mb-2">inventory_2</span>
+                  <p className="text-on-surface font-medium">No parts found</p>
+                  <p className="text-sm text-on-surface-variant">Start by adding your first part</p>
                 </td>
               </tr>
             ) : (
@@ -430,11 +389,13 @@ export default function PartsPage() {
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded bg-slate-100 flex items-center justify-center">
-                          <Package className="w-5 h-5 text-slate-400" />
+                          <span className="material-symbols-outlined text-slate-400">
+                            {getCategoryIcon(part.category?.name || '')}
+                          </span>
                         </div>
                         <div>
                           <p className="font-bold text-on-surface">{part.name}</p>
-                          <p className="text-xs text-slate-400">{part.description || 'Aucune description'}</p>
+                          <p className="text-xs text-slate-400">{part.description || 'No description'}</p>
                         </div>
                       </div>
                     </td>
@@ -446,41 +407,37 @@ export default function PartsPage() {
                     </td>
                     <td className="px-6 py-4 font-headline font-semibold">{formatCurrency(part.sellingPrice)}</td>
                     <td className="px-6 py-4">
-                      <span className="font-headline font-bold">{part.quantity}</span>
-                      <span className="text-[10px] text-slate-400 ml-1">unités</span>
+                      <span className={`font-headline font-bold ${part.quantity <= part.minStock ? 'text-tertiary' : ''}`}>
+                        {String(part.quantity).padStart(2, '0')}
+                      </span>
+                      <span className="text-[10px] text-slate-400 ml-1">units</span>
                     </td>
                     <td className="px-6 py-4">
                       <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${status.className}`}>
-                        <span className="w-1.5 h-1.5 rounded-full bg-current" />
+                        <span className={`w-1.5 h-1.5 rounded-full ${part.quantity <= 0 ? 'bg-error' : part.quantity <= part.minStock ? 'bg-tertiary' : 'bg-primary-container'}`}></span>
                         {status.label}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Button 
-                          variant="ghost" 
-                          size="icon"
+                        <button 
                           onClick={() => handleOpenPartDialog(part)}
-                          className="text-slate-400 hover:text-primary hover:bg-primary-fixed/30 rounded"
+                          className="p-2 text-slate-400 hover:text-primary transition-colors hover:bg-primary-fixed/30 rounded"
                         >
-                          <Edit className="w-4 h-4" />
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="icon"
+                          <span className="material-symbols-outlined text-lg">edit_note</span>
+                        </button>
+                        <button 
                           onClick={() => handleOpenStockDialog(part, 'ENTRY')}
-                          className="text-slate-400 hover:text-primary hover:bg-primary-fixed/30 rounded"
+                          className="p-2 text-slate-400 hover:text-primary transition-colors hover:bg-primary-fixed/30 rounded"
                         >
-                          <ArrowDownRight className="w-4 h-4" />
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="icon"
+                          <span className="material-symbols-outlined text-lg">arrow_downward</span>
+                        </button>
+                        <button 
                           onClick={() => handleDeletePart(part.id)}
-                          className="text-slate-400 hover:text-error hover:bg-error-container/30 rounded"
+                          className="p-2 text-slate-400 hover:text-error transition-colors hover:bg-error-container/30 rounded"
                         >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
+                          <span className="material-symbols-outlined text-lg">delete_sweep</span>
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -492,133 +449,230 @@ export default function PartsPage() {
         {/* Pagination */}
         <div className="px-6 py-4 bg-surface-container-low/30 flex justify-between items-center">
           <p className="text-xs text-slate-500 font-label">
-            Affichage de <span className="font-bold text-on-surface">1-{parts.length}</span> sur <span className="font-bold text-on-surface">{parts.length}</span> entrées
+            Showing <span className="font-bold text-on-surface">1-{parts.length}</span> of <span className="font-bold text-on-surface">{parts.length}</span> entries
           </p>
+          <div className="flex gap-1">
+            <button className="w-8 h-8 rounded border border-outline-variant/20 flex items-center justify-center text-slate-400 hover:bg-white transition-all">
+              <span className="material-symbols-outlined text-sm">chevron_left</span>
+            </button>
+            <button className="w-8 h-8 rounded border border-outline-variant/20 flex items-center justify-center bg-primary text-white font-bold text-xs">1</button>
+            <button className="w-8 h-8 rounded border border-outline-variant/20 flex items-center justify-center text-slate-400 hover:bg-white transition-all">
+              <span className="material-symbols-outlined text-sm">chevron_right</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Stock Turnover Health & Offline Capability */}
+      <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-surface-container-lowest rounded-xl p-6 border border-outline-variant/5">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="font-headline font-bold text-lg">Stock Turnover Health</h3>
+            <button className="text-primary text-xs font-bold flex items-center gap-1">
+              VIEW FULL REPORT <span className="material-symbols-outlined text-sm">trending_up</span>
+            </button>
+          </div>
+          <div className="space-y-6">
+            <div>
+              <div className="flex justify-between mb-2">
+                <span className="text-xs font-label text-slate-500">Fast Moving Goods</span>
+                <span className="text-xs font-bold">84%</span>
+              </div>
+              <div className="h-2 w-full bg-surface-container rounded-full overflow-hidden">
+                <div className="h-full bg-gradient-to-r from-emerald-500 to-primary-container" style={{ width: '84%' }}></div>
+              </div>
+            </div>
+            <div>
+              <div className="flex justify-between mb-2">
+                <span className="text-xs font-label text-slate-500">Obsolete Inventory</span>
+                <span className="text-xs font-bold">12%</span>
+              </div>
+              <div className="h-2 w-full bg-surface-container rounded-full overflow-hidden">
+                <div className="h-full bg-gradient-to-r from-tertiary to-tertiary-container" style={{ width: '12%' }}></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="bg-primary text-white rounded-xl p-6 relative overflow-hidden">
+          <div className="relative z-10">
+            <span className="material-symbols-outlined text-4xl text-primary-fixed mb-4" style={{ fontVariationSettings: "'FILL' 1" }}>offline_pin</span>
+            <h3 className="font-headline font-bold text-xl mb-2">Offline Capability</h3>
+            <p className="text-primary-fixed/80 text-sm mb-6">Your data is being saved locally. You can continue managing stock even without an active internet connection.</p>
+            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-lg border border-white/20">
+              <span className="w-2 h-2 rounded-full bg-primary-fixed animate-pulse"></span>
+              <span className="text-xs font-bold tracking-wide">SYSTEM READY</span>
+            </div>
+          </div>
+          <div className="absolute -bottom-8 -right-8 w-40 h-40 bg-white/5 rounded-full border border-white/10 blur-2xl"></div>
         </div>
       </div>
 
       {/* Part Dialog */}
       <Dialog open={showPartDialog} onOpenChange={setShowPartDialog}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-surface-container-lowest border-0 shadow-2xl">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-surface-container-lowest border-0 shadow-2xl">
           <DialogHeader className="pb-4 border-b border-outline-variant/10">
-            <DialogTitle className="text-xl font-headline font-bold">
-              {editingPart ? 'Modifier la pièce' : 'Nouvelle pièce'}
+            <DialogTitle className="text-2xl font-headline font-bold flex items-center gap-3">
+              <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>info</span>
+              {editingPart ? 'Edit Part Details' : 'Add New Part'}
             </DialogTitle>
             <DialogDescription>
-              {editingPart ? 'Modifiez les informations de la pièce' : 'Remplissez les informations de la nouvelle pièce'}
+              {editingPart ? 'Update component specifications and inventory thresholds' : 'Fill in the information for the new part'}
             </DialogDescription>
           </DialogHeader>
 
-          <div className="grid grid-cols-2 gap-6 py-6">
-            <div className="col-span-2 space-y-2">
-              <Label className="text-xs font-label font-bold text-on-surface-variant uppercase tracking-wider">Nom de la pièce</Label>
-              <Input
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="bg-surface-container-highest border-0 border-b-2 border-outline-variant focus:border-primary rounded-t-lg"
-                placeholder="Nom de la pièce"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label className="text-xs font-label font-bold text-on-surface-variant uppercase tracking-wider">Référence</Label>
-              <Input
-                value={formData.reference}
-                onChange={(e) => setFormData({ ...formData, reference: e.target.value })}
-                className="bg-surface-container-highest border-0 border-b-2 border-outline-variant focus:border-primary rounded-t-lg font-mono text-sm"
-                placeholder="REF-001"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label className="text-xs font-label font-bold text-on-surface-variant uppercase tracking-wider">Catégorie</Label>
-              {categories.length > 0 ? (
-                <Select 
-                  value={formData.categoryId} 
-                  onValueChange={(v) => setFormData({ ...formData, categoryId: v })}
-                >
-                  <SelectTrigger className="bg-surface-container-highest border-0 border-b-2 border-outline-variant focus:border-primary rounded-t-lg">
-                    <SelectValue placeholder="Sélectionner une catégorie" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {categories.map((cat) => (
-                      <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              ) : (
-                <div className="p-4 rounded-lg bg-tertiary-fixed/20 text-tertiary text-sm">
-                  Créez d&apos;abord une catégorie dans Paramètres
+          <div className="grid grid-cols-12 gap-8 py-6">
+            {/* Left Column - Main Info */}
+            <div className="col-span-8 space-y-8">
+              <div className="bg-surface-container-low p-6 rounded-xl border border-outline-variant/10">
+                <h3 className="font-headline text-lg font-bold mb-6 flex items-center gap-3">
+                  <span className="material-symbols-outlined text-primary">info</span>
+                  General Information
+                </h3>
+                <div className="space-y-6">
+                  <div>
+                    <Label className="text-[10px] font-label font-bold text-slate-500 uppercase tracking-widest mb-2 block">Part Name</Label>
+                    <Input
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      className="bg-surface-container-highest border-0 border-b-2 border-outline-variant focus:border-primary rounded-t-lg px-4 py-3"
+                      placeholder="Enter component name"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-6">
+                    <div>
+                      <Label className="text-[10px] font-label font-bold text-slate-500 uppercase tracking-widest mb-2 block">Reference Number (REF)</Label>
+                      <Input
+                        value={formData.reference}
+                        onChange={(e) => setFormData({ ...formData, reference: e.target.value })}
+                        className="bg-surface-container-highest border-0 border-b-2 border-outline-variant focus:border-primary rounded-t-lg px-4 py-3 font-mono text-sm"
+                        placeholder="SKU-000-000"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-[10px] font-label font-bold text-slate-500 uppercase tracking-widest mb-2 block">Category</Label>
+                      {categories.length > 0 ? (
+                        <Select 
+                          value={formData.categoryId} 
+                          onValueChange={(v) => setFormData({ ...formData, categoryId: v })}
+                        >
+                          <SelectTrigger className="bg-surface-container-highest border-0 border-b-2 border-outline-variant focus:border-primary rounded-t-lg px-4 py-3">
+                            <SelectValue placeholder="Select category" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {categories.map((cat) => (
+                              <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <div className="p-4 rounded-lg bg-tertiary-fixed/20 text-tertiary text-sm">
+                          Create a category first in Settings
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
-              )}
+              </div>
+
+              {/* Financial Valuation */}
+              <div className="bg-surface-container-low p-6 rounded-xl border border-outline-variant/10">
+                <h3 className="font-headline text-lg font-bold mb-6 flex items-center gap-3">
+                  <span className="material-symbols-outlined text-primary">payments</span>
+                  Financial Valuation
+                </h3>
+                <div className="grid grid-cols-2 gap-8">
+                  <div>
+                    <Label className="text-[10px] font-label font-bold text-slate-500 uppercase tracking-widest mb-2 block">Buying Price (USD)</Label>
+                    <div className="relative">
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">$</span>
+                      <Input
+                        type="number"
+                        value={formData.purchasePrice}
+                        onChange={(e) => setFormData({ ...formData, purchasePrice: e.target.value })}
+                        className="bg-surface-container-highest border-0 border-b-2 border-outline-variant focus:border-primary rounded-t-lg pl-8 pr-4 py-3 font-bold text-lg text-emerald-900"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <Label className="text-[10px] font-label font-bold text-slate-500 uppercase tracking-widest mb-2 block">Selling Price (USD)</Label>
+                    <div className="relative">
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">$</span>
+                      <Input
+                        type="number"
+                        value={formData.sellingPrice}
+                        onChange={(e) => setFormData({ ...formData, sellingPrice: e.target.value })}
+                        className="bg-surface-container-highest border-0 border-b-2 border-outline-variant focus:border-primary rounded-t-lg pl-8 pr-4 py-3 font-bold text-lg text-primary"
+                      />
+                    </div>
+                    {formData.purchasePrice && formData.sellingPrice && parseFloat(formData.purchasePrice) > 0 && (
+                      <div className="flex justify-between mt-2">
+                        <p className="text-[11px] text-slate-400 font-medium">Profit Margin:</p>
+                        <p className="text-[11px] text-primary font-bold">
+                          {(((parseFloat(formData.sellingPrice) - parseFloat(formData.purchasePrice)) / parseFloat(formData.purchasePrice)) * 100).toFixed(1)}%
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="space-y-2">
-              <Label className="text-xs font-label font-bold text-on-surface-variant uppercase tracking-wider">Prix d&apos;achat (XOF)</Label>
-              <Input
-                type="number"
-                value={formData.purchasePrice}
-                onChange={(e) => setFormData({ ...formData, purchasePrice: e.target.value })}
-                className="bg-surface-container-highest border-0 border-b-2 border-outline-variant focus:border-primary rounded-t-lg font-bold"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label className="text-xs font-label font-bold text-on-surface-variant uppercase tracking-wider">Prix de vente (XOF)</Label>
-              <Input
-                type="number"
-                value={formData.sellingPrice}
-                onChange={(e) => setFormData({ ...formData, sellingPrice: e.target.value })}
-                className="bg-surface-container-highest border-0 border-b-2 border-outline-variant focus:border-primary rounded-t-lg font-bold text-primary"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label className="text-xs font-label font-bold text-on-surface-variant uppercase tracking-wider">Quantité initiale</Label>
-              <Input
-                type="number"
-                value={formData.quantity}
-                onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
-                className="bg-surface-container-highest border-0 border-b-2 border-outline-variant focus:border-primary rounded-t-lg font-bold text-xl"
-                disabled={!!editingPart}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label className="text-xs font-label font-bold text-on-surface-variant uppercase tracking-wider">Stock minimum</Label>
-              <Input
-                type="number"
-                value={formData.minStock}
-                onChange={(e) => setFormData({ ...formData, minStock: e.target.value })}
-                className="bg-surface-container-highest border-0 border-b-2 border-outline-variant focus:border-primary rounded-t-lg font-bold text-xl"
-              />
-            </div>
-            <div className="col-span-2 space-y-2">
-              <Label className="text-xs font-label font-bold text-on-surface-variant uppercase tracking-wider">Emplacement</Label>
-              <Input
-                value={formData.location}
-                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                placeholder="Ex: Étagère A, Rayon 3"
-                className="bg-surface-container-highest border-0 border-b-2 border-outline-variant focus:border-primary rounded-t-lg"
-              />
-            </div>
-            <div className="col-span-2 space-y-2">
-              <Label className="text-xs font-label font-bold text-on-surface-variant uppercase tracking-wider">Description</Label>
-              <Textarea
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="bg-surface-container-highest border-0 border-b-2 border-outline-variant focus:border-primary rounded-t-lg"
-                rows={2}
-              />
+
+            {/* Right Column - Stock Control */}
+            <div className="col-span-4 space-y-6">
+              <div className="bg-surface-container-low p-6 rounded-xl border border-outline-variant/10">
+                <h3 className="font-headline text-lg font-bold mb-6 flex items-center gap-3">
+                  <span className="material-symbols-outlined text-primary">inventory</span>
+                  Stock Control
+                </h3>
+                <div className="space-y-6">
+                  <div>
+                    <Label className="text-[10px] font-label font-bold text-slate-500 uppercase tracking-widest mb-2 block">Initial Stock Level</Label>
+                    <div className="flex items-center gap-4">
+                      <Input
+                        type="number"
+                        value={formData.quantity}
+                        onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
+                        className="bg-surface-container-highest border-0 border-b-2 border-outline-variant focus:border-primary rounded-t-lg px-4 py-3 font-bold text-xl flex-1"
+                        disabled={!!editingPart}
+                      />
+                      <div className="bg-secondary-container px-3 py-1 rounded text-[10px] font-bold text-on-secondary-container">UNITS</div>
+                    </div>
+                  </div>
+                  <div>
+                    <Label className="text-[10px] font-label font-bold text-slate-500 uppercase tracking-widest mb-2 block">Minimum Stock Alert</Label>
+                    <Input
+                      type="number"
+                      value={formData.minStock}
+                      onChange={(e) => setFormData({ ...formData, minStock: e.target.value })}
+                      className="bg-error-container/20 border-0 border-b-2 border-error focus:border-error rounded-t-lg px-4 py-3 font-bold text-xl text-error"
+                    />
+                    <p className="text-[11px] text-error font-medium mt-2 flex items-center gap-1">
+                      <span className="material-symbols-outlined text-sm">notifications_active</span>
+                      Auto-notify when stock drops below {formData.minStock}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="space-y-3">
+                <Button 
+                  onClick={handleSavePart} 
+                  className="w-full bg-gradient-to-br from-primary to-primary-container text-white py-4 rounded-xl font-headline font-bold text-lg shadow-xl shadow-emerald-900/20 hover:shadow-2xl hover:-translate-y-0.5 transition-all"
+                  disabled={categories.length === 0}
+                >
+                  {editingPart ? 'Save Changes' : 'Create Part'}
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={() => setShowPartDialog(false)} 
+                  className="w-full bg-white border border-slate-200 text-slate-600 py-3 rounded-xl font-headline font-bold text-sm hover:bg-slate-50 transition-all"
+                >
+                  Cancel
+                </Button>
+              </div>
             </div>
           </div>
-
-          <DialogFooter className="gap-3 pt-4 border-t border-outline-variant/10">
-            <Button variant="outline" onClick={() => setShowPartDialog(false)} className="bg-white border-slate-200 text-slate-600">
-              Annuler
-            </Button>
-            <Button 
-              onClick={handleSavePart} 
-              className="bg-gradient-to-br from-primary to-primary-container text-white shadow-lg shadow-primary/20"
-              disabled={categories.length === 0}
-            >
-              {editingPart ? 'Modifier' : 'Créer'}
-            </Button>
-          </DialogFooter>
         </DialogContent>
       </Dialog>
 
@@ -628,41 +682,44 @@ export default function PartsPage() {
           <DialogHeader className="pb-4 border-b border-outline-variant/10">
             <DialogTitle className="text-xl font-headline font-bold flex items-center gap-2">
               {stockData.type === 'ENTRY' ? (
-                <><ArrowDownRight className="w-5 h-5 text-primary" /> Entrée de stock</>
+                <><span className="material-symbols-outlined text-primary">arrow_downward</span> Stock Entry</>
               ) : (
-                <><ArrowUpRight className="w-5 h-5 text-tertiary" /> Sortie de stock</>
+                <><span className="material-symbols-outlined text-tertiary">arrow_upward</span> Stock Exit</>
               )}
             </DialogTitle>
             <DialogDescription>
               <span className="font-medium text-on-surface">{selectedPartForStock?.name}</span>
-              <span className="text-on-surface-variant"> • Stock actuel: {selectedPartForStock?.quantity}</span>
+              <span className="text-on-surface-variant"> • Current stock: {selectedPartForStock?.quantity}</span>
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-5 py-6">
             <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label className="text-xs font-label font-bold text-on-surface-variant uppercase tracking-wider">Quantité</Label>
+              <div>
+                <Label className="text-[10px] font-label font-bold text-slate-500 uppercase tracking-widest mb-2 block">Quantity</Label>
                 <Input
                   type="number"
                   value={stockData.quantity}
                   onChange={(e) => setStockData({ ...stockData, quantity: e.target.value })}
-                  className="bg-surface-container-highest border-0 border-b-2 border-outline-variant focus:border-primary rounded-t-lg font-bold text-xl"
+                  className="bg-surface-container-highest border-0 border-b-2 border-outline-variant focus:border-primary rounded-t-lg px-4 py-3 font-bold text-xl"
                 />
               </div>
-              <div className="space-y-2">
-                <Label className="text-xs font-label font-bold text-on-surface-variant uppercase tracking-wider">Prix unitaire</Label>
-                <Input
-                  type="number"
-                  value={stockData.unitPrice}
-                  onChange={(e) => setStockData({ ...stockData, unitPrice: e.target.value })}
-                  className="bg-surface-container-highest border-0 border-b-2 border-outline-variant focus:border-primary rounded-t-lg font-bold"
-                />
+              <div>
+                <Label className="text-[10px] font-label font-bold text-slate-500 uppercase tracking-widest mb-2 block">Unit Price</Label>
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">$</span>
+                  <Input
+                    type="number"
+                    value={stockData.unitPrice}
+                    onChange={(e) => setStockData({ ...stockData, unitPrice: e.target.value })}
+                    className="bg-surface-container-highest border-0 border-b-2 border-outline-variant focus:border-primary rounded-t-lg pl-8 pr-4 py-3 font-bold"
+                  />
+                </div>
               </div>
             </div>
-            <div className="space-y-2">
-              <Label className="text-xs font-label font-bold text-on-surface-variant uppercase tracking-wider">
-                {stockData.type === 'ENTRY' ? 'Fournisseur' : 'Client'}
+            <div>
+              <Label className="text-[10px] font-label font-bold text-slate-500 uppercase tracking-widest mb-2 block">
+                {stockData.type === 'ENTRY' ? 'Supplier' : 'Customer'}
               </Label>
               <Input
                 value={stockData.type === 'ENTRY' ? stockData.supplier : stockData.customer}
@@ -671,22 +728,22 @@ export default function PartsPage() {
                     ? setStockData({ ...stockData, supplier: e.target.value })
                     : setStockData({ ...stockData, customer: e.target.value })
                 }
-                className="bg-surface-container-highest border-0 border-b-2 border-outline-variant focus:border-primary rounded-t-lg"
+                className="bg-surface-container-highest border-0 border-b-2 border-outline-variant focus:border-primary rounded-t-lg px-4 py-3"
               />
             </div>
-            <div className="space-y-2">
-              <Label className="text-xs font-label font-bold text-on-surface-variant uppercase tracking-wider">Motif</Label>
+            <div>
+              <Label className="text-[10px] font-label font-bold text-slate-500 uppercase tracking-widest mb-2 block">Reason</Label>
               <Input
                 value={stockData.reason}
                 onChange={(e) => setStockData({ ...stockData, reason: e.target.value })}
-                className="bg-surface-container-highest border-0 border-b-2 border-outline-variant focus:border-primary rounded-t-lg"
+                className="bg-surface-container-highest border-0 border-b-2 border-outline-variant focus:border-primary rounded-t-lg px-4 py-3"
               />
             </div>
           </div>
 
           <DialogFooter className="gap-3 pt-4 border-t border-outline-variant/10">
             <Button variant="outline" onClick={() => setShowStockDialog(false)} className="bg-white border-slate-200 text-slate-600">
-              Annuler
+              Cancel
             </Button>
             <Button 
               onClick={handleSaveMovement}
@@ -696,7 +753,7 @@ export default function PartsPage() {
                   : 'bg-tertiary text-on-tertiary shadow-tertiary/20'
               }`}
             >
-              Confirmer
+              Confirm
             </Button>
           </DialogFooter>
         </DialogContent>

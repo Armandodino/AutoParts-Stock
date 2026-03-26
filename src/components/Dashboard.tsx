@@ -1,21 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Package, 
-  TrendingUp, 
-  TrendingDown, 
-  AlertTriangle,
-  DollarSign,
-  ArrowUpRight,
-  ArrowDownRight,
-  RefreshCw,
-  Sparkles,
-  Activity,
-  LayoutDashboard
-} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface DashboardStats {
@@ -76,17 +62,17 @@ export default function Dashboard() {
   };
 
   const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('fr-FR', {
+    return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'XOF',
-      maximumFractionDigits: 0
+      currency: 'USD',
+      maximumFractionDigits: 1,
+      notation: 'compact'
     }).format(value);
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('fr-FR', {
-      day: '2-digit',
-      month: '2-digit',
+    const date = new Date(dateString);
+    return date.toLocaleTimeString('en-US', {
       hour: '2-digit',
       minute: '2-digit'
     });
@@ -94,11 +80,11 @@ export default function Dashboard() {
 
   const getMovementTypeLabel = (type: string) => {
     switch (type) {
-      case 'ENTRY': return { label: 'Entrée', bgColor: 'bg-primary-fixed', textColor: 'text-on-primary-fixed-variant', icon: ArrowDownRight };
-      case 'EXIT': return { label: 'Sortie', bgColor: 'bg-error-container', textColor: 'text-on-error-container', icon: ArrowUpRight };
-      case 'ADJUST': return { label: 'Ajustement', bgColor: 'bg-sky-100', textColor: 'text-sky-700', icon: RefreshCw };
-      case 'RETURN': return { label: 'Retour', bgColor: 'bg-tertiary-fixed', textColor: 'text-on-tertiary-fixed-variant', icon: ArrowDownRight };
-      default: return { label: type, bgColor: 'bg-gray-100', textColor: 'text-gray-700', icon: ArrowUpRight };
+      case 'ENTRY': return { label: 'Inbound', bgColor: 'bg-primary-fixed', textColor: 'text-on-primary-fixed-variant', statusText: 'RECEIVED' };
+      case 'EXIT': return { label: 'Outbound', bgColor: 'bg-tertiary-fixed', textColor: 'text-on-tertiary-fixed-variant', statusText: 'SHIPPED' };
+      case 'ADJUST': return { label: 'Adjustment', bgColor: 'bg-secondary-container', textColor: 'text-on-secondary-container', statusText: 'INSPECTION' };
+      case 'RETURN': return { label: 'Return', bgColor: 'bg-primary-fixed', textColor: 'text-on-primary-fixed-variant', statusText: 'RECEIVED' };
+      default: return { label: type, bgColor: 'bg-slate-100', textColor: 'text-slate-700', statusText: type.toUpperCase() };
     }
   };
 
@@ -107,7 +93,7 @@ export default function Dashboard() {
       <div className="flex items-center justify-center h-64">
         <div className="flex flex-col items-center gap-4">
           <div className="w-12 h-12 rounded-full border-4 border-primary-fixed border-t-primary animate-spin" />
-          <p className="text-on-surface-variant font-medium">Chargement des données...</p>
+          <p className="text-on-surface-variant font-medium">Loading dashboard data...</p>
         </div>
       </div>
     );
@@ -116,10 +102,10 @@ export default function Dashboard() {
   if (!stats) {
     return (
       <div className="text-center py-12">
-        <AlertTriangle className="w-12 h-12 mx-auto text-amber-500 mb-4" />
-        <p className="text-on-surface mb-4">Erreur lors du chargement des données</p>
+        <span className="material-symbols-outlined text-5xl text-tertiary mb-4">warning</span>
+        <p className="text-on-surface mb-4">Error loading data</p>
         <Button onClick={fetchDashboardStats} className="bg-primary text-on-primary">
-          Réessayer
+          Retry
         </Button>
       </div>
     );
@@ -130,86 +116,92 @@ export default function Dashboard() {
       {/* Header Section */}
       <header className="mb-10">
         <div className="flex items-baseline gap-2">
-          <span className="text-xs font-label uppercase tracking-[0.2em] text-primary font-bold">Tableau de bord</span>
+          <span className="text-xs font-label uppercase tracking-[0.2em] text-primary font-bold">Main Dashboard</span>
         </div>
-        <h1 className="text-4xl font-headline font-extrabold tracking-tight text-on-surface mt-1">Vue d&apos;ensemble du stock</h1>
+        <h1 className="text-4xl font-headline font-extrabold tracking-tight text-on-surface mt-1">Global Fleet Overview</h1>
       </header>
 
       {/* Bento Grid: Stats & Trends */}
       <div className="grid grid-cols-12 gap-6 mb-8">
-        {/* Stat Card: Total Parts */}
-        <div className="col-span-12 md:col-span-3 bg-surface-container-lowest rounded-xl p-6 shadow-sm flex flex-col justify-between">
+        {/* Stat Card: Total Stock */}
+        <div className="col-span-12 md:col-span-3 bg-surface-container-lowest rounded-xl p-6 shadow-[0_12px_32px_-4px_rgba(25,28,29,0.04)] flex flex-col justify-between">
           <div>
-            <span className="text-xs font-label text-on-surface-variant uppercase tracking-wider font-semibold">Total Pièces</span>
-            <h3 className="text-4xl font-headline font-extrabold text-on-surface mt-2">{stats.totalParts}</h3>
+            <span className="text-xs font-label text-on-surface-variant uppercase tracking-wider font-semibold">Total Stock</span>
+            <h3 className="text-4xl font-headline font-extrabold text-on-surface mt-2">
+              {stats.totalParts.toLocaleString()}
+            </h3>
           </div>
-          <div className="mt-4 flex items-center gap-2 text-primary">
-            <TrendingUp className="w-4 h-4" />
-            <span className="text-xs font-bold">+4.2% ce mois</span>
+          <div className="mt-4 flex items-center gap-2 text-emerald-600">
+            <span className="material-symbols-outlined text-sm">trending_up</span>
+            <span className="text-xs font-bold">+4.2% from last month</span>
           </div>
         </div>
 
-        {/* Stat Card: Stock Value */}
-        <div className="col-span-12 md:col-span-3 bg-surface-container-lowest rounded-xl p-6 shadow-sm flex flex-col justify-between">
+        {/* Stat Card: Inventory Value */}
+        <div className="col-span-12 md:col-span-3 bg-surface-container-lowest rounded-xl p-6 shadow-[0_12px_32px_-4px_rgba(25,28,29,0.04)] flex flex-col justify-between">
           <div>
-            <span className="text-xs font-label text-on-surface-variant uppercase tracking-wider font-semibold">Valeur Totale</span>
-            <h3 className="text-4xl font-headline font-extrabold text-on-surface mt-2">{formatCurrency(stats.totalValue)}</h3>
+            <span className="text-xs font-label text-on-surface-variant uppercase tracking-wider font-semibold">Inventory Value</span>
+            <h3 className="text-4xl font-headline font-extrabold text-on-surface mt-2">
+              {formatCurrency(stats.totalValue)}
+            </h3>
           </div>
-          <div className="mt-4 flex items-center gap-2 text-primary">
-            <TrendingUp className="w-4 h-4" />
-            <span className="text-xs font-bold">Performance élevée</span>
+          <div className="mt-4 flex items-center gap-2 text-emerald-600">
+            <span className="material-symbols-outlined text-sm">trending_up</span>
+            <span className="text-xs font-bold">High performance tier</span>
           </div>
         </div>
 
-        {/* Graph Card: Inbound/Outbound */}
-        <div className="col-span-12 md:col-span-6 bg-surface-container-lowest rounded-xl p-6 shadow-sm relative overflow-hidden">
+        {/* Graph Card: Movement Trends */}
+        <div className="col-span-12 md:col-span-6 bg-surface-container-lowest rounded-xl p-6 shadow-[0_12px_32px_-4px_rgba(25,28,29,0.04)] relative overflow-hidden">
           <div className="flex justify-between items-start mb-4">
             <div>
-              <span className="text-xs font-label text-on-surface-variant uppercase tracking-wider font-semibold">Tendances</span>
-              <h3 className="text-xl font-headline font-bold text-on-surface">Flux Hebdomadaire</h3>
+              <span className="text-xs font-label text-on-surface-variant uppercase tracking-wider font-semibold">Movement Trends</span>
+              <h3 className="text-xl font-headline font-bold text-on-surface">Weekly Flow</h3>
             </div>
             <div className="flex gap-4">
               <div className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-primary"></span>
-                <span className="text-[10px] font-label font-bold uppercase">Entrées</span>
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                <span className="text-[10px] font-label font-bold uppercase">In</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <span className="w-2.5 h-2.5 rounded-full bg-slate-300"></span>
-                <span className="text-[10px] font-label font-bold uppercase">Sorties</span>
+                <span className="text-[10px] font-label font-bold uppercase">Out</span>
               </div>
             </div>
           </div>
-          {/* Visual Placeholder for Bar Chart */}
+          {/* Visual Bar Chart */}
           <div className="h-24 flex items-end gap-1 px-2 mt-4">
-            <div className="flex-1 bg-primary-fixed/50 rounded-t-sm h-[40%]"></div>
-            <div className="flex-1 bg-primary-fixed/70 rounded-t-sm h-[60%]"></div>
-            <div className="flex-1 bg-primary rounded-t-sm h-[85%]"></div>
-            <div className="flex-1 bg-primary-container rounded-t-sm h-[70%]"></div>
-            <div className="flex-1 bg-primary rounded-t-sm h-[90%]"></div>
-            <div className="flex-1 bg-primary-fixed/70 rounded-t-sm h-[55%]"></div>
-            <div className="flex-1 bg-primary-fixed/50 rounded-t-sm h-[45%]"></div>
+            <div className="flex-1 bg-emerald-100 rounded-t-sm h-[40%]"></div>
+            <div className="flex-1 bg-emerald-200 rounded-t-sm h-[60%]"></div>
+            <div className="flex-1 bg-emerald-500 rounded-t-sm h-[85%]"></div>
+            <div className="flex-1 bg-emerald-600 rounded-t-sm h-[70%]"></div>
+            <div className="flex-1 bg-emerald-700 rounded-t-sm h-[90%]"></div>
+            <div className="flex-1 bg-emerald-400 rounded-t-sm h-[55%]"></div>
+            <div className="flex-1 bg-emerald-300 rounded-t-sm h-[45%]"></div>
           </div>
         </div>
       </div>
 
-      {/* Middle Section: Detailed Table & Alerts */}
+      {/* Middle Section: Alerts & Movements */}
       <div className="grid grid-cols-12 gap-8">
-        {/* Low Stock Alerts Section */}
+        {/* Critical Alerts Section */}
         <div className="col-span-12 lg:col-span-4 space-y-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-headline font-bold text-on-surface">Alertes Critiques</h2>
+            <h2 className="text-lg font-headline font-bold text-on-surface">Critical Alerts</h2>
             <span className="bg-error-container text-on-error-container text-[10px] font-bold px-2 py-0.5 rounded-full">
-              {stats.lowStockCount + stats.outOfStockCount} ALERTES
+              {stats.lowStockCount + stats.outOfStockCount} ACTION ITEMS
             </span>
           </div>
           <div className="space-y-4">
             {stats.alerts.length === 0 ? (
               <div className="p-4 bg-surface-container-lowest rounded-xl text-center">
-                <Sparkles className="w-8 h-8 mx-auto text-primary mb-2" />
-                <p className="text-sm text-on-surface-variant">Aucune alerte active</p>
+                <span className="material-symbols-outlined text-4xl text-primary mb-2" style={{ fontVariationSettings: "'FILL' 1" }}>
+                  check_circle
+                </span>
+                <p className="text-sm text-on-surface-variant">All systems operational</p>
               </div>
             ) : (
-              stats.alerts.slice(0, 3).map((alert) => (
+              stats.alerts.slice(0, 3).map((alert, index) => (
                 <div 
                   key={alert.id}
                   className={`p-4 bg-surface-container-lowest rounded-xl border-l-4 shadow-sm flex items-start gap-4 ${
@@ -217,11 +209,16 @@ export default function Dashboard() {
                   }`}
                 >
                   <div className={`p-2 rounded-lg ${alert.type === 'out_of_stock' ? 'bg-error-container' : 'bg-tertiary-fixed'}`}>
-                    <AlertTriangle className={`w-5 h-5 ${alert.type === 'out_of_stock' ? 'text-error' : 'text-tertiary'}`} />
+                    <span className={`material-symbols-outlined ${alert.type === 'out_of_stock' ? 'text-error' : 'text-tertiary'}`}>
+                      {alert.type === 'out_of_stock' ? 'warning' : 'priority_high'}
+                    </span>
                   </div>
                   <div className="flex-1">
                     <p className="text-sm font-bold font-headline">{alert.title}</p>
                     <p className="text-xs text-on-surface-variant mb-3">{alert.message}</p>
+                    <div className="w-full h-1.5 bg-surface-container rounded-full">
+                      <div className={`h-full rounded-full ${alert.type === 'out_of_stock' ? 'bg-error' : 'bg-tertiary'}`} style={{ width: `${(index + 1) * 25}%` }}></div>
+                    </div>
                   </div>
                 </div>
               ))
@@ -230,50 +227,49 @@ export default function Dashboard() {
         </div>
 
         {/* Recent Movements Table */}
-        <div className="col-span-12 lg:col-span-8 bg-surface-container-lowest rounded-xl p-8 shadow-sm">
+        <div className="col-span-12 lg:col-span-8 bg-surface-container-lowest rounded-xl p-8 shadow-[0_12px_32px_-4px_rgba(25,28,29,0.04)]">
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h2 className="text-xl font-headline font-extrabold text-on-surface">Mouvements Récents</h2>
-              <p className="text-sm text-on-surface-variant">Activité des dernières 24 heures</p>
+              <h2 className="text-xl font-headline font-extrabold text-on-surface">Recent Movements</h2>
+              <p className="text-sm text-on-surface-variant">Last 24 hours of activity across all bays</p>
             </div>
-            <Button variant="ghost" className="text-sm font-bold text-primary flex items-center gap-2 px-4 py-2 hover:bg-primary-fixed/30 rounded-lg transition-colors">
-              Voir tout
-              <ArrowUpRight className="w-4 h-4" />
-            </Button>
+            <button className="text-sm font-bold text-primary flex items-center gap-2 px-4 py-2 hover:bg-emerald-50 rounded-lg transition-colors">
+              View Audit Log
+              <span className="material-symbols-outlined text-base">arrow_forward</span>
+            </button>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full border-collapse">
               <thead>
                 <tr className="text-left border-b border-outline-variant/20">
-                  <th className="pb-4 text-[10px] font-label font-bold uppercase tracking-widest text-on-surface-variant">Pièce</th>
-                  <th className="pb-4 text-[10px] font-label font-bold uppercase tracking-widest text-on-surface-variant">Réf.</th>
+                  <th className="pb-4 text-[10px] font-label font-bold uppercase tracking-widest text-on-surface-variant">Part / Vehicle</th>
+                  <th className="pb-4 text-[10px] font-label font-bold uppercase tracking-widest text-on-surface-variant">Stock ID</th>
                   <th className="pb-4 text-[10px] font-label font-bold uppercase tracking-widest text-on-surface-variant">Action</th>
-                  <th className="pb-4 text-[10px] font-label font-bold uppercase tracking-widest text-on-surface-variant">Statut</th>
-                  <th className="pb-4 text-[10px] font-label font-bold uppercase tracking-widest text-on-surface-variant text-right">Date</th>
+                  <th className="pb-4 text-[10px] font-label font-bold uppercase tracking-widest text-on-surface-variant">Status</th>
+                  <th className="pb-4 text-[10px] font-label font-bold uppercase tracking-widest text-on-surface-variant text-right">Timestamp</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-outline-variant/10">
                 {stats.recentMovements.length === 0 ? (
                   <tr>
                     <td colSpan={5} className="py-8 text-center">
-                      <Activity className="w-8 h-8 mx-auto text-slate-300 mb-2" />
-                      <p className="text-sm text-on-surface-variant">Aucun mouvement récent</p>
+                      <span className="material-symbols-outlined text-4xl text-slate-300 mb-2">activity</span>
+                      <p className="text-sm text-on-surface-variant">No recent movements</p>
                     </td>
                   </tr>
                 ) : (
                   stats.recentMovements.slice(0, 5).map((movement) => {
                     const typeInfo = getMovementTypeLabel(movement.type);
-                    const Icon = typeInfo.icon;
                     
                     return (
                       <tr key={movement.id} className="group hover:bg-surface-container-low transition-colors">
                         <td className="py-5">
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center">
-                              <Package className="w-5 h-5 text-slate-400" />
+                            <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center overflow-hidden">
+                              <span className="material-symbols-outlined text-slate-400">settings_input_component</span>
                             </div>
                             <span className="text-sm font-bold font-headline">
-                              {movement.part?.name || 'Pièce inconnue'}
+                              {movement.part?.name || 'Unknown Part'}
                             </span>
                           </div>
                         </td>
@@ -283,13 +279,13 @@ export default function Dashboard() {
                           </span>
                         </td>
                         <td className="py-5">
-                          <span className={`text-xs font-bold ${movement.type === 'ENTRY' ? 'text-primary' : movement.type === 'EXIT' ? 'text-tertiary' : 'text-on-surface-variant'}`}>
+                          <span className={`text-xs font-bold ${movement.type === 'ENTRY' ? 'text-emerald-700' : movement.type === 'EXIT' ? 'text-tertiary' : 'text-on-surface-variant'}`}>
                             {typeInfo.label}
                           </span>
                         </td>
                         <td className="py-5">
                           <span className={`${typeInfo.bgColor} ${typeInfo.textColor} text-[10px] font-bold px-3 py-1 rounded-full`}>
-                            {movement.type === 'ENTRY' ? 'REÇU' : movement.type === 'EXIT' ? 'EXPÉDIÉ' : 'AJUSTÉ'}
+                            {typeInfo.statusText}
                           </span>
                         </td>
                         <td className="py-5 text-right">
@@ -308,19 +304,17 @@ export default function Dashboard() {
       {/* Inventory Efficiency Score */}
       <div className="mt-12 bg-primary rounded-2xl p-8 text-white relative overflow-hidden flex items-center justify-between">
         <div className="relative z-10">
-          <h3 className="text-2xl font-headline font-extrabold mb-2">Score d&apos;Efficacité</h3>
-          <p className="text-white/70 text-sm max-w-md">
-            Votre taux de rotation est actuellement 15% plus élevé que la moyenne du secteur automobile.
-          </p>
+          <h3 className="text-2xl font-headline font-extrabold mb-2">Inventory Efficiency Score</h3>
+          <p className="text-white/70 text-sm max-w-md">Your turnover rate is currently 15% higher than the industry average for luxury automotive parts.</p>
           <div className="mt-6 flex items-center gap-4">
             <div className="w-64 h-3 bg-white/20 rounded-full overflow-hidden">
-              <div className="h-full bg-gradient-to-r from-tertiary-fixed-dim to-primary-fixed w-[88%] rounded-full" />
+              <div className="h-full bg-gradient-to-r from-tertiary-fixed-dim to-primary-fixed w-[88%] rounded-full"></div>
             </div>
             <span className="text-xl font-headline font-bold">88%</span>
           </div>
         </div>
         <div className="absolute right-0 top-0 h-full w-1/3 opacity-10 flex items-center justify-center rotate-12">
-          <TrendingUp className="w-48 h-48" />
+          <span className="material-symbols-outlined text-[200px]">speed</span>
         </div>
       </div>
     </div>

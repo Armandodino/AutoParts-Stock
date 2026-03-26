@@ -37,13 +37,16 @@ export default function Home() {
         <div className="flex flex-col items-center gap-6">
           <div className="relative">
             <div className="h-20 w-20 rounded-2xl bg-primary flex items-center justify-center shadow-xl">
-              <span className="material-symbols-outlined text-white text-4xl">settings</span>
+              <span className="material-symbols-outlined text-white text-4xl" style={{ fontVariationSettings: "'FILL' 1" }}>
+                account_balance_wallet
+              </span>
             </div>
             <div className="absolute inset-0 h-20 w-20 rounded-2xl bg-primary animate-ping opacity-20" />
           </div>
           <div className="flex flex-col items-center gap-2">
-            <p className="text-on-surface font-medium font-headline">Chargement...</p>
-            <div className="flex gap-1">
+            <p className="text-on-surface font-medium font-headline text-lg">Kinetic Ledger</p>
+            <p className="text-on-surface-variant text-sm">Loading system...</p>
+            <div className="flex gap-1 mt-2">
               <div className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: '0ms' }} />
               <div className="w-2 h-2 rounded-full bg-primary-container animate-bounce" style={{ animationDelay: '150ms' }} />
               <div className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: '300ms' }} />
@@ -82,9 +85,9 @@ export default function Home() {
   return (
     <div className="min-h-screen flex bg-surface">
       <Sidebar currentPage={currentPage} onPageChange={setCurrentPage} />
-      <div className="flex-1 flex flex-col min-h-screen">
-        <Header />
-        <main className="flex-1 p-6 lg:p-8 overflow-auto">
+      <div className="flex-1 flex flex-col min-h-screen ml-64">
+        <Header currentPage={currentPage} />
+        <main className="flex-1 pt-24 px-8 pb-12 overflow-auto">
           {renderPage()}
         </main>
       </div>
