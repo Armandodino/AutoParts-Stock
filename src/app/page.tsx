@@ -33,23 +33,23 @@ export default function Home() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-surface">
+      <div className="min-h-screen flex items-center justify-center bg-slate-100">
         <div className="flex flex-col items-center gap-6">
           <div className="relative">
-            <div className="h-20 w-20 rounded-2xl bg-primary flex items-center justify-center shadow-xl">
+            <div className="h-20 w-20 rounded-2xl bg-emerald-800 flex items-center justify-center shadow-xl">
               <span className="material-symbols-outlined text-white text-4xl" style={{ fontVariationSettings: "'FILL' 1" }}>
                 account_balance_wallet
               </span>
             </div>
-            <div className="absolute inset-0 h-20 w-20 rounded-2xl bg-primary animate-ping opacity-20" />
+            <div className="absolute inset-0 h-20 w-20 rounded-2xl bg-emerald-800 animate-ping opacity-20" />
           </div>
           <div className="flex flex-col items-center gap-2">
-            <p className="text-on-surface font-medium font-headline text-lg">Kinetic Ledger</p>
-            <p className="text-on-surface-variant text-sm">Loading system...</p>
+            <p className="text-emerald-900 font-bold text-lg" style={{ fontFamily: 'Manrope, sans-serif' }}>Kinetic Ledger</p>
+            <p className="text-slate-500 text-sm">Loading system...</p>
             <div className="flex gap-1 mt-2">
-              <div className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: '0ms' }} />
-              <div className="w-2 h-2 rounded-full bg-primary-container animate-bounce" style={{ animationDelay: '150ms' }} />
-              <div className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: '300ms' }} />
+              <div className="w-2 h-2 rounded-full bg-emerald-800 animate-bounce" style={{ animationDelay: '0ms' }} />
+              <div className="w-2 h-2 rounded-full bg-emerald-600 animate-bounce" style={{ animationDelay: '150ms' }} />
+              <div className="w-2 h-2 rounded-full bg-emerald-800 animate-bounce" style={{ animationDelay: '300ms' }} />
             </div>
           </div>
         </div>
@@ -83,7 +83,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen flex bg-surface">
+    <div className="min-h-screen flex bg-slate-100">
       <Sidebar currentPage={currentPage} onPageChange={setCurrentPage} />
       <div className="flex-1 flex flex-col min-h-screen ml-64">
         <Header currentPage={currentPage} />
