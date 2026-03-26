@@ -47,7 +47,7 @@ export default function Home() {
           <div className="flex flex-col items-center gap-2">
             <p className="text-emerald-900 font-bold text-lg" style={{ fontFamily: 'Manrope, sans-serif' }}>
               AutoParts Stock
-p>
+            </p>
             <p className="text-slate-500 text-sm">Chargement en cours...</p>
             <div className="flex gap-1 mt-2">
               <div className="w-2 h-2 rounded-full bg-emerald-800 animate-bounce" style={{ animationDelay: '0ms' }} />
