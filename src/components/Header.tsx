@@ -1,5 +1,7 @@
 'use client';
 
+import { Search, Bell, HelpCircle } from 'lucide-react';
+
 interface HeaderProps {
   currentPage?: string;
 }
@@ -42,9 +44,7 @@ export default function Header({ currentPage = 'dashboard' }: HeaderProps) {
         <div className="flex items-center gap-3">
           {/* Recherche */}
           <div className="relative">
-            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">
-              search
-            </span>
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
             <input 
               className="pl-10 pr-4 py-2 bg-slate-100 border-none rounded-lg text-sm w-56 focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all"
               placeholder="Rechercher une pièce..."
@@ -54,13 +54,13 @@ export default function Header({ currentPage = 'dashboard' }: HeaderProps) {
           
           {/* Notifications */}
           <button className="relative p-2 text-slate-500 hover:bg-slate-100 rounded-lg transition-all">
-            <span className="material-symbols-outlined">notifications</span>
+            <Bell className="w-5 h-5" />
             <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full" />
           </button>
           
           {/* Aide */}
           <button className="p-2 text-slate-500 hover:bg-slate-100 rounded-lg transition-all">
-            <span className="material-symbols-outlined">help_outline</span>
+            <HelpCircle className="w-5 h-5" />
           </button>
         </div>
       </div>

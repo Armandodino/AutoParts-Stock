@@ -12,6 +12,7 @@ import SettingsPage from '@/components/SettingsPage';
 import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
 import { Toaster } from '@/components/ui/sonner';
+import { Car } from 'lucide-react';
 
 export default function Home() {
   const { isAuthenticated, user } = useAuthStore();
@@ -38,9 +39,7 @@ export default function Home() {
         <div className="flex flex-col items-center gap-6">
           <div className="relative">
             <div className="h-16 w-16 rounded-2xl bg-emerald-800 flex items-center justify-center shadow-xl">
-              <span className="material-symbols-outlined text-white text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>
-                directions_car
-              </span>
+              <Car className="w-8 h-8 text-white" />
             </div>
             <div className="absolute inset-0 h-16 w-16 rounded-2xl bg-emerald-800 animate-ping opacity-20" />
           </div>

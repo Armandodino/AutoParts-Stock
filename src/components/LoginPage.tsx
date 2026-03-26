@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Car, User, Lock, AlertCircle, ArrowRight, Wifi, WifiOff } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function LoginPage() {
@@ -59,9 +60,7 @@ export default function LoginPage() {
           {/* Header */}
           <div className="pt-12 pb-8 px-10 text-center">
             <div className="inline-flex items-center justify-center w-16 h-16 bg-emerald-100 rounded-xl mb-6">
-              <span className="material-symbols-outlined text-emerald-700 text-4xl" style={{ fontVariationSettings: "'FILL' 1" }}>
-                directions_car
-              </span>
+              <Car className="w-8 h-8 text-emerald-700" />
             </div>
             <h1 className="font-extrabold text-3xl text-emerald-900 tracking-tight mb-2" style={{ fontFamily: 'Manrope, sans-serif' }}>
               AutoParts Stock
@@ -75,7 +74,7 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit} className="px-10 pb-12 space-y-6">
             {error && (
               <Alert className="bg-red-50 text-red-700 border-0">
-                <span className="material-symbols-outlined text-lg">error</span>
+                <AlertCircle className="w-4 h-4" />
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             )}
@@ -87,9 +86,7 @@ export default function LoginPage() {
                   Nom d&apos;utilisateur
                 </Label>
                 <div className="relative">
-                  <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-emerald-600 transition-colors">
-                    person
-                  </span>
+                  <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5 group-focus-within:text-emerald-600 transition-colors" />
                   <Input
                     type="text"
                     placeholder="Entrez votre identifiant"
@@ -107,9 +104,7 @@ export default function LoginPage() {
                   Mot de passe
                 </Label>
                 <div className="relative">
-                  <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-emerald-600 transition-colors">
-                    lock
-                  </span>
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5 group-focus-within:text-emerald-600 transition-colors" />
                   <Input
                     type="password"
                     placeholder="••••••••"
@@ -131,13 +126,13 @@ export default function LoginPage() {
             >
               {isLoading ? (
                 <>
-                  <span className="material-symbols-outlined animate-spin">progress_activity</span>
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   Connexion en cours...
                 </>
               ) : (
                 <>
                   Se connecter
-                  <span className="material-symbols-outlined text-xl">arrow_forward</span>
+                  <ArrowRight className="w-5 h-5" />
                 </>
               )}
             </Button>
@@ -151,10 +146,10 @@ export default function LoginPage() {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75" />
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-600" />
             </span>
+            <WifiOff className="w-4 h-4 text-emerald-700" />
             <span className="text-xs font-bold text-emerald-800 tracking-wide uppercase">
               Mode Hors-ligne Actif
             </span>
-            <span className="material-symbols-outlined text-sm text-emerald-700">cloud_off</span>
           </div>
           <p className="text-xs text-slate-500 text-center leading-relaxed max-w-[300px]">
             Cette application fonctionne en mode local. Toutes vos données sont sauvegardées sur cet appareil.

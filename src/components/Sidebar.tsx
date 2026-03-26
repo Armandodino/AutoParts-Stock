@@ -1,6 +1,10 @@
 'use client';
 
 import { useAuthStore } from '@/store';
+import { 
+  LayoutDashboard, Package, ArrowLeftRight, AlertTriangle, 
+  Settings, LogOut, Car
+} from 'lucide-react';
 
 interface SidebarProps {
   currentPage: string;
@@ -8,11 +12,11 @@ interface SidebarProps {
 }
 
 const menuItems = [
-  { id: 'dashboard', label: 'Tableau de Bord', icon: 'dashboard' },
-  { id: 'parts', label: 'Inventaire', icon: 'inventory_2' },
-  { id: 'movements', label: 'Mouvements', icon: 'sync_alt' },
-  { id: 'alerts', label: 'Alertes Stock', icon: 'warning' },
-  { id: 'settings', label: 'Paramètres', icon: 'settings' },
+  { id: 'dashboard', label: 'Tableau de Bord', icon: LayoutDashboard },
+  { id: 'parts', label: 'Inventaire', icon: Package },
+  { id: 'movements', label: 'Mouvements', icon: ArrowLeftRight },
+  { id: 'alerts', label: 'Alertes Stock', icon: AlertTriangle },
+  { id: 'settings', label: 'Paramètres', icon: Settings },
 ];
 
 export default function Sidebar({ currentPage, onPageChange }: SidebarProps) {
@@ -24,9 +28,7 @@ export default function Sidebar({ currentPage, onPageChange }: SidebarProps) {
       <div className="px-6 mb-8">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-emerald-800 flex items-center justify-center">
-            <span className="material-symbols-outlined text-white" style={{ fontVariationSettings: "'FILL' 1" }}>
-              directions_car
-            </span>
+            <Car className="w-5 h-5 text-white" />
           </div>
           <div>
             <h1 className="text-lg font-bold text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>
@@ -47,6 +49,7 @@ export default function Sidebar({ currentPage, onPageChange }: SidebarProps) {
         <div className="space-y-1">
           {menuItems.map((item) => {
             const isActive = currentPage === item.id;
+            const IconComponent = item.icon;
             
             return (
               <button
@@ -58,12 +61,7 @@ export default function Sidebar({ currentPage, onPageChange }: SidebarProps) {
                     : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
                 }`}
               >
-                <span 
-                  className="material-symbols-outlined text-xl"
-                  style={isActive ? { fontVariationSettings: "'FILL' 1" } : {}}
-                >
-                  {item.icon}
-                </span>
+                <IconComponent className={`w-5 h-5 ${isActive ? 'text-emerald-700' : ''}`} />
                 <span className="text-sm font-medium">{item.label}</span>
               </button>
             );
@@ -91,7 +89,7 @@ export default function Sidebar({ currentPage, onPageChange }: SidebarProps) {
               className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
               title="Déconnexion"
             >
-              <span className="material-symbols-outlined text-lg">logout</span>
+              <LogOut className="w-4 h-4" />
             </button>
           </div>
         </div>

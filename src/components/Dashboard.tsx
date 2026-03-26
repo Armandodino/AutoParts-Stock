@@ -2,6 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { 
+  Package, Wallet, AlertTriangle, XCircle, Activity, 
+  CheckCircle, TrendingUp, ArrowDown, ArrowUp, RefreshCw, 
+  Settings, Folder, Clock, ChevronRight
+} from 'lucide-react';
 
 interface DashboardStats {
   totalParts: number;
@@ -83,42 +88,37 @@ export default function Dashboard() {
       case 'ENTRY': 
         return { 
           label: 'Entrée', 
-          icon: 'arrow_downward',
+          icon: ArrowDown,
           bgColor: 'bg-emerald-100', 
           textColor: 'text-emerald-700',
-          status: 'REÇU'
         };
       case 'EXIT': 
         return { 
           label: 'Sortie', 
-          icon: 'arrow_upward',
+          icon: ArrowUp,
           bgColor: 'bg-amber-100', 
           textColor: 'text-amber-700',
-          status: 'LIVRÉ'
         };
       case 'ADJUST': 
         return { 
           label: 'Ajustement', 
-          icon: 'sync',
+          icon: RefreshCw,
           bgColor: 'bg-slate-100', 
           textColor: 'text-slate-600',
-          status: 'VÉRIFIÉ'
         };
       case 'RETURN': 
         return { 
           label: 'Retour', 
-          icon: 'undo',
+          icon: RefreshCw,
           bgColor: 'bg-blue-100', 
           textColor: 'text-blue-600',
-          status: 'RETOUR'
         };
       default: 
         return { 
           label: type, 
-          icon: 'inventory_2',
+          icon: Package,
           bgColor: 'bg-slate-100', 
           textColor: 'text-slate-600',
-          status: type.toUpperCase() 
         };
     }
   };
@@ -137,7 +137,7 @@ export default function Dashboard() {
   if (!stats) {
     return (
       <div className="text-center py-12">
-        <span className="material-symbols-outlined text-5xl text-amber-500 mb-4">warning</span>
+        <AlertTriangle className="w-12 h-12 text-amber-500 mx-auto mb-4" />
         <p className="text-slate-900 mb-4">Erreur lors du chargement des données</p>
         <Button onClick={fetchDashboardStats} className="bg-emerald-800 text-white">
           Réessayer
@@ -159,11 +159,11 @@ export default function Dashboard() {
         <span className="text-xs uppercase tracking-[0.2em] text-emerald-800 font-bold">
           Tableau de Bord
         </span>
-        <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 mt-1" style={{ fontFamily: 'Manrope, sans-serif' }}>
+        <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 mt-1">
           Gestion de Stock - Pièces Automobiles
         </h1>
         <p className="text-slate-500 mt-2 text-sm">
-          Vue d'ensemble de votre inventaire et activité récente
+          Vue d&apos;ensemble de votre inventaire et activité récente
         </p>
       </header>
 
@@ -176,19 +176,17 @@ export default function Dashboard() {
               <span className="text-xs uppercase tracking-wider font-semibold text-slate-500">
                 Pièces en Stock
               </span>
-              <h3 className="text-3xl font-extrabold text-slate-900 mt-2" style={{ fontFamily: 'Manrope, sans-serif' }}>
+              <h3 className="text-3xl font-extrabold text-slate-900 mt-2">
                 {stats.totalParts.toLocaleString('fr-FR')}
               </h3>
             </div>
             <div className="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center">
-              <span className="material-symbols-outlined text-emerald-700" style={{ fontVariationSettings: "'FILL' 1" }}>
-                inventory_2
-              </span>
+              <Package className="w-6 h-6 text-emerald-700" />
             </div>
           </div>
           <div className="mt-4 pt-4 border-t border-slate-100">
             <div className="flex items-center gap-2 text-sm">
-              <span className="material-symbols-outlined text-emerald-600 text-base">check_circle</span>
+              <CheckCircle className="w-4 h-4 text-emerald-600" />
               <span className="text-slate-600">Références actives</span>
             </div>
           </div>
@@ -201,20 +199,18 @@ export default function Dashboard() {
               <span className="text-xs uppercase tracking-wider font-semibold text-slate-500">
                 Valeur Totale
               </span>
-              <h3 className="text-2xl font-extrabold text-slate-900 mt-2" style={{ fontFamily: 'Manrope, sans-serif' }}>
+              <h3 className="text-2xl font-extrabold text-slate-900 mt-2">
                 {formatCurrency(stats.totalValue)}
               </h3>
             </div>
             <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center">
-              <span className="material-symbols-outlined text-blue-700" style={{ fontVariationSettings: "'FILL' 1" }}>
-                payments
-              </span>
+              <Wallet className="w-6 h-6 text-blue-700" />
             </div>
           </div>
           <div className="mt-4 pt-4 border-t border-slate-100">
             <div className="flex items-center gap-2 text-sm">
-              <span className="material-symbols-outlined text-blue-600 text-base">trending_up</span>
-              <span className="text-slate-600">Valeur d'achat</span>
+              <TrendingUp className="w-4 h-4 text-blue-600" />
+              <span className="text-slate-600">Valeur d&apos;achat</span>
             </div>
           </div>
         </div>
@@ -226,19 +222,17 @@ export default function Dashboard() {
               <span className="text-xs uppercase tracking-wider font-semibold text-slate-500">
                 Stock Faible
               </span>
-              <h3 className="text-3xl font-extrabold text-amber-600 mt-2" style={{ fontFamily: 'Manrope, sans-serif' }}>
+              <h3 className="text-3xl font-extrabold text-amber-600 mt-2">
                 {stats.lowStockCount}
               </h3>
             </div>
             <div className="w-12 h-12 rounded-xl bg-amber-100 flex items-center justify-center">
-              <span className="material-symbols-outlined text-amber-600" style={{ fontVariationSettings: "'FILL' 1" }}>
-                priority_high
-              </span>
+              <AlertTriangle className="w-6 h-6 text-amber-600" />
             </div>
           </div>
           <div className="mt-4 pt-4 border-t border-slate-100">
             <div className="flex items-center gap-2 text-sm">
-              <span className="material-symbols-outlined text-amber-600 text-base">notifications_active</span>
+              <AlertTriangle className="w-4 h-4 text-amber-600" />
               <span className="text-slate-600">Alertes actives</span>
             </div>
           </div>
@@ -251,19 +245,17 @@ export default function Dashboard() {
               <span className="text-xs uppercase tracking-wider font-semibold text-slate-500">
                 Rupture de Stock
               </span>
-              <h3 className="text-3xl font-extrabold text-red-600 mt-2" style={{ fontFamily: 'Manrope, sans-serif' }}>
+              <h3 className="text-3xl font-extrabold text-red-600 mt-2">
                 {stats.outOfStockCount}
               </h3>
             </div>
             <div className="w-12 h-12 rounded-xl bg-red-100 flex items-center justify-center">
-              <span className="material-symbols-outlined text-red-600" style={{ fontVariationSettings: "'FILL' 1" }}>
-                error
-              </span>
+              <XCircle className="w-6 h-6 text-red-600" />
             </div>
           </div>
           <div className="mt-4 pt-4 border-t border-slate-100">
             <div className="flex items-center gap-2 text-sm">
-              <span className="material-symbols-outlined text-red-600 text-base">warning</span>
+              <XCircle className="w-4 h-4 text-red-600" />
               <span className="text-slate-600">À commander</span>
             </div>
           </div>
@@ -275,7 +267,7 @@ export default function Dashboard() {
         {/* Alertes Critiques */}
         <div className="col-span-12 lg:col-span-4 space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-bold text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>
+            <h2 className="text-lg font-bold text-slate-900">
               Alertes Stock
             </h2>
             {alertCount > 0 && (
@@ -287,9 +279,7 @@ export default function Dashboard() {
 
           {stats.alerts.length === 0 ? (
             <div className="p-6 bg-white rounded-xl text-center border border-slate-100">
-              <span className="material-symbols-outlined text-5xl text-emerald-600 mb-3" style={{ fontVariationSettings: "'FILL' 1" }}>
-                check_circle
-              </span>
+              <CheckCircle className="w-12 h-12 text-emerald-600 mx-auto mb-3" />
               <p className="font-medium text-slate-900">Tout est en ordre</p>
               <p className="text-sm text-slate-500 mt-1">Aucune alerte active</p>
             </div>
@@ -306,11 +296,11 @@ export default function Dashboard() {
                     <div className={`p-2 rounded-lg ${
                       alert.type === 'out_of_stock' ? 'bg-red-100' : 'bg-amber-100'
                     }`}>
-                      <span className={`material-symbols-outlined text-lg ${
-                        alert.type === 'out_of_stock' ? 'text-red-600' : 'text-amber-600'
-                      }`}>
-                        {alert.type === 'out_of_stock' ? 'error' : 'warning'}
-                      </span>
+                      {alert.type === 'out_of_stock' ? (
+                        <XCircle className="w-5 h-5 text-red-600" />
+                      ) : (
+                        <AlertTriangle className="w-5 h-5 text-amber-600" />
+                      )}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-semibold text-slate-900 text-sm">
@@ -331,7 +321,7 @@ export default function Dashboard() {
         <div className="col-span-12 lg:col-span-8 bg-white rounded-xl shadow-sm border border-slate-100">
           <div className="flex items-center justify-between p-6 border-b border-slate-100">
             <div>
-              <h2 className="text-lg font-bold text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>
+              <h2 className="text-lg font-bold text-slate-900">
                 Mouvements Récents
               </h2>
               <p className="text-sm text-slate-500 mt-1">
@@ -341,14 +331,14 @@ export default function Dashboard() {
             <div className="flex items-center gap-4">
               <div className="text-center">
                 <p className="text-2xl font-bold text-emerald-700">{stats.todayMovements}</p>
-                <p className="text-xs text-slate-500">Aujourd'hui</p>
+                <p className="text-xs text-slate-500">Aujourd&apos;hui</p>
               </div>
             </div>
           </div>
 
           {stats.recentMovements.length === 0 ? (
             <div className="p-8 text-center">
-              <span className="material-symbols-outlined text-5xl text-slate-300 mb-3">activity</span>
+              <Activity className="w-12 h-12 text-slate-300 mx-auto mb-3" />
               <p className="text-slate-500">Aucun mouvement récent</p>
               <p className="text-sm text-slate-400 mt-1">Les mouvements apparaîtront ici</p>
             </div>
@@ -367,12 +357,13 @@ export default function Dashboard() {
                 <tbody className="divide-y divide-slate-100">
                   {stats.recentMovements.slice(0, 6).map((movement) => {
                     const typeInfo = getMovementTypeInfo(movement.type);
+                    const IconComponent = typeInfo.icon;
                     return (
                       <tr key={movement.id} className="hover:bg-slate-50 transition-colors">
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
                             <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center">
-                              <span className="material-symbols-outlined text-slate-400 text-lg">precision_manufacturing</span>
+                              <Settings className="w-4 h-4 text-slate-400" />
                             </div>
                             <span className="font-medium text-slate-900 text-sm">
                               {movement.part?.name || 'Pièce inconnue'}
@@ -386,7 +377,7 @@ export default function Dashboard() {
                         </td>
                         <td className="px-6 py-4">
                           <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold ${typeInfo.bgColor} ${typeInfo.textColor}`}>
-                            <span className="material-symbols-outlined text-sm">{typeInfo.icon}</span>
+                            <IconComponent className="w-3 h-3" />
                             {typeInfo.label}
                           </span>
                         </td>
@@ -411,7 +402,7 @@ export default function Dashboard() {
       {/* Statistiques par Catégorie */}
       <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-6">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-bold text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>
+          <h2 className="text-lg font-bold text-slate-900">
             Répartition par Catégorie
           </h2>
           <span className="text-sm text-slate-500">
@@ -421,7 +412,7 @@ export default function Dashboard() {
 
         {stats.categoryStats.length === 0 ? (
           <div className="text-center py-8">
-            <span className="material-symbols-outlined text-4xl text-slate-300 mb-2">category</span>
+            <Folder className="w-10 h-10 text-slate-300 mx-auto mb-2" />
             <p className="text-slate-500">Aucune catégorie</p>
           </div>
         ) : (
@@ -429,7 +420,7 @@ export default function Dashboard() {
             {stats.categoryStats.slice(0, 10).map((cat) => (
               <div key={cat.categoryId} className="p-4 bg-slate-50 rounded-xl">
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="material-symbols-outlined text-emerald-700 text-lg">folder</span>
+                  <Folder className="w-4 h-4 text-emerald-700" />
                   <span className="font-semibold text-slate-900 text-sm truncate">{cat.categoryName}</span>
                 </div>
                 <p className="text-2xl font-bold text-slate-900">{cat.partCount}</p>
@@ -444,8 +435,8 @@ export default function Dashboard() {
       <div className="bg-gradient-to-r from-emerald-800 to-emerald-700 rounded-2xl p-8 text-white relative overflow-hidden">
         <div className="relative z-10 flex items-center justify-between">
           <div>
-            <h3 className="text-xl font-bold mb-2" style={{ fontFamily: 'Manrope, sans-serif' }}>
-              État de l'Inventaire
+            <h3 className="text-xl font-bold mb-2">
+              État de l&apos;Inventaire
             </h3>
             <p className="text-white/80 text-sm max-w-md">
               {healthScore >= 90 
@@ -484,7 +475,7 @@ export default function Dashboard() {
           </div>
         </div>
         <div className="absolute -right-8 -bottom-8 opacity-10">
-          <span className="material-symbols-outlined text-[180px]">verified</span>
+          <CheckCircle className="w-48 h-48" />
         </div>
       </div>
     </div>
