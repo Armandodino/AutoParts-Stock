@@ -1,0 +1,282 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String          @id @default(cuid())
+  email          String          @unique
+  username       String          @unique
+  password       String
+  name           String?
+  role           String          @default("cashier")
+  avatar         String?
+  isActive       Boolean         @default(true)
+  lastLogin      DateTime?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  activities     Activity[]
+  purchases      Purchase[]
+  sales          Sale[]
+  sessions       Session[]
+  stockMovements StockMovement[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Setting {
+  id             String    @id @default(cuid())
+  companyName    String    @default("Mon Entreprise")
+  companyLogo    String?
+  companyAddress String?
+  companyPhone   String?
+  companyEmail   String?
+  currency       String    @default("XOF")
+  currencySymbol String    @default("FCFA")
+  taxRate        Float     @default(18.0)
+  taxEnabled     Boolean   @default(true)
+  language       String    @default("fr")
+  theme          String    @default("system")
+  invoicePrefix  String    @default("FAC")
+  purchasePrefix String    @default("ACH")
+  licenseKey     String?
+  licenseValid   Boolean   @default(false)
+  licenseExpiry  DateTime?
+  demoMode       Boolean   @default(true)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+model Category {
+  id          String     @id @default(cuid())
+  name        String
+  description String?
+  color       String     @default("#6b7280")
+  icon        String?
+  parentId    String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  parent      Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children    Category[] @relation("CategoryHierarchy")
+  products    Product[]
+}
+
+model Unit {
+  id           String    @id @default(cuid())
+  name         String
+  abbreviation String
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  products     Product[]
+}
+
+model Product {
+  id             String          @id @default(cuid())
+  name           String
+  sku            String          @unique
+  barcode        String?         @unique
+  description    String?
+  categoryId     String?
+  unitId         String?
+  purchasePrice  Float           @default(0)
+  sellingPrice   Float           @default(0)
+  stock          Int             @default(0)
+  minStock       Int             @default(10)
+  maxStock       Int?
+  image          String?
+  isActive       Boolean         @default(true)
+  expiryDate     DateTime?
+  // Champs spécifiques pièces automobiles
+  oemNumber      String?         // Numéro OEM (référence constructeur)
+  oemNumbers     String?         // Autres numéros OEM compatibles (séparés par virgule)
+  brand          String?         // Marque de la pièce (Bosch, Brembo, Valeo, etc.)
+  compatibility  String?         // Véhicules compatibles (JSON ou texte)
+  warrantyMonths Int?            // Durée de garantie en mois
+  weight         Float?          // Poids en kg
+  location       String?         // Emplacement dans le magasin (Rayon/Étagère)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  unit           Unit?           @relation(fields: [unitId], references: [id])
+  category       Category?       @relation(fields: [categoryId], references: [id])
+  purchaseItems  PurchaseItem[]
+  saleItems      SaleItem[]
+  stockMovements StockMovement[]
+  compatibilities VehicleCompatibility[]
+}
+
+// Marques de véhicules
+model VehicleBrand {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  logo      String?
+  isActive  Boolean  @default(true)
+  models    VehicleModel[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Modèles de véhicules
+model VehicleModel {
+  id             String   @id @default(cuid())
+  name           String
+  brandId        String
+  yearStart      Int?
+  yearEnd        Int?
+  isActive       Boolean  @default(true)
+  brand          VehicleBrand @relation(fields: [brandId], references: [id])
+  compatibilities VehicleCompatibility[]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  @@unique([name, brandId])
+}
+
+// Compatibilité produit/véhicule
+model VehicleCompatibility {
+  id        String   @id @default(cuid())
+  productId String
+  vehicleModelId String
+  notes     String? // Notes spécifiques (ex: "Moteur 2.0L uniquement")
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  vehicleModel VehicleModel @relation(fields: [vehicleModelId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  @@unique([productId, vehicleModelId])
+}
+
+model Client {
+  id        String   @id @default(cuid())
+  name      String
+  email     String?
+  phone     String?
+  address   String?
+  city      String?
+  country   String?
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  sales     Sale[]
+}
+
+model Supplier {
+  id        String     @id @default(cuid())
+  name      String
+  email     String?
+  phone     String?
+  address   String?
+  city      String?
+  country   String?
+  notes     String?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  purchases Purchase[]
+}
+
+model StockMovement {
+  id        String   @id @default(cuid())
+  productId String
+  type      String
+  quantity  Int
+  reason    String?
+  reference String?
+  userId    String?
+  createdAt DateTime @default(now())
+  user      User?    @relation(fields: [userId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id])
+}
+
+model Sale {
+  id            String     @id @default(cuid())
+  invoiceNumber String     @unique
+  clientId      String?
+  userId        String
+  subtotal      Float
+  discount      Float      @default(0)
+  tax           Float      @default(0)
+  total         Float
+  paymentMethod String     @default("cash")
+  paymentStatus String     @default("paid")
+  notes         String?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  user          User       @relation(fields: [userId], references: [id])
+  client        Client?    @relation(fields: [clientId], references: [id])
+  items         SaleItem[]
+}
+
+model SaleItem {
+  id        String  @id @default(cuid())
+  saleId    String
+  productId String
+  quantity  Int
+  unitPrice Float
+  discount  Float   @default(0)
+  total     Float
+  product   Product @relation(fields: [productId], references: [id])
+  sale      Sale    @relation(fields: [saleId], references: [id], onDelete: Cascade)
+}
+
+model Purchase {
+  id             String         @id @default(cuid())
+  purchaseNumber String         @unique
+  supplierId     String?
+  userId         String
+  subtotal       Float
+  tax            Float          @default(0)
+  total          Float
+  status         String         @default("pending")
+  paymentStatus  String         @default("pending")
+  notes          String?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  user           User           @relation(fields: [userId], references: [id])
+  supplier       Supplier?      @relation(fields: [supplierId], references: [id])
+  items          PurchaseItem[]
+}
+
+model PurchaseItem {
+  id         String   @id @default(cuid())
+  purchaseId String
+  productId  String
+  quantity   Int
+  unitPrice  Float
+  total      Float
+  product    Product  @relation(fields: [productId], references: [id])
+  purchase   Purchase @relation(fields: [purchaseId], references: [id], onDelete: Cascade)
+}
+
+model Activity {
+  id        String   @id @default(cuid())
+  userId    String?
+  action    String
+  entity    String?
+  entityId  String?
+  details   String?
+  createdAt DateTime @default(now())
+  user      User?    @relation(fields: [userId], references: [id])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  title     String
+  message   String
+  type      String   @default("info")
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Backup {
+  id        String   @id @default(cuid())
+  filename  String
+  size      Int
+  createdAt DateTime @default(now())
+}
