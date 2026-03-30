@@ -49,3 +49,25 @@ prompt
 server.log
 # Skills directory
 /skills/
+# Fichiers système
+.accesslog
+.config
+.stats
+start.sh
+keep-server.sh
+
+# Base de données locale
+db/*.db
+db/*.db-journal
+
+# Mini-services
+mini-services/
+
+# Logs
+*.log
+
+# Uploads et backups
+upload/
+backups/
+download/
+examples/

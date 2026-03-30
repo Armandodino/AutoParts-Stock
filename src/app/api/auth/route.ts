@@ -139,7 +139,7 @@ export async function GET(request: NextRequest) {
       
       const admin = await db.user.create({
         data: {
-          email: 'admin@jooman.local',
+          email: 'admin@autoparts.local',
           username: 'admin',
           password: hashedPassword,
           name: 'Administrateur',

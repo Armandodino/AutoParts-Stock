@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
     
     const workbook = XLSX.utils.book_new()
     const settings = await db.setting.findFirst()
-    const companyName = settings?.companyName || 'Jooman'
+    const companyName = settings?.companyName || 'AutoParts Stock'
     
     // Helper function to add sheet
     const addSheet = (name: string, data: any[], headers: string[]) => {
